@@ -1,0 +1,17 @@
+{
+  "repository": {
+    "fullName": "facebook/react",
+    "name": "react",
+    "description": "A JavaScript library for building user interfaces",
+    "language": "JavaScript",
+    "stars": 200000,
+    "topics": ["javascript", "react", "ui"]
+  },
+  "userSkills": [
+    {
+      "name": "JavaScript",
+      "confidence": 90,
+      "category": "Language"
+    }
+  ]
+}

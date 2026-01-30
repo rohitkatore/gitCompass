@@ -41,14 +41,44 @@ gitCompass/
 
 - Node.js 18+
 - Python 3.9+
-- MongoDB Atlas account
+- MongoDB Atlas account (or Docker)
 - GitHub OAuth App
 
-### 1. Clone & Install
+### Option 1: Docker (Recommended)
 
 ```bash
-git clone https://github.com/yourusername/gitcompass.git
-cd gitcompass
+# Clone the repository
+git clone https://github.com/rohitkatore/gitCompass.git
+cd gitCompass
+
+# Copy environment file and configure
+cp .env.docker.example .env
+# Edit .env with your credentials (GitHub OAuth, Gemini API key, etc.)
+
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+Access the application:
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8080
+- **AI Engine**: http://localhost:8000
+
+To stop:
+```bash
+docker-compose down
+```
+
+### Option 2: Manual Setup
+
+#### 1. Clone & Install
+
+```bash
+git clone https://github.com/rohitkatore/gitCompass.git
+cd gitCompass
 
 # Install all dependencies
 npm run install:all
@@ -59,7 +89,7 @@ pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
 
-### 2. Configure Environment
+#### 2. Configure Environment
 
 Copy the example env files and fill in your credentials:
 

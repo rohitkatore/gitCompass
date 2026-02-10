@@ -1,5 +1,4 @@
 import { forwardRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -15,41 +14,37 @@ const Input = forwardRef(({
   ...props
 }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-
   const inputType = type === 'password' && showPassword ? 'text' : type;
 
   return (
     <div className={cn('w-full', containerClassName)}>
       {label && (
-        <label className="block text-sm font-medium text-slate-300 mb-2">
+        <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wide">
           {label}
         </label>
       )}
       
       <div className="relative">
         {Icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-            <Icon className="w-5 h-5" />
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
+            <Icon className="w-4 h-4" />
           </div>
         )}
         
-        <motion.input
+        <input
           ref={ref}
           type={inputType}
           className={cn(
-            'w-full bg-slate-800/50 border rounded-lg px-4 py-3 text-white placeholder-slate-500 transition-all duration-300 focus:outline-none',
-            Icon && 'pl-11',
-            type === 'password' && 'pr-11',
+            'w-full h-9 bg-zinc-900 border rounded-lg px-3 text-sm text-zinc-100 placeholder-zinc-600 transition-colors duration-150 focus:outline-none',
+            Icon && 'pl-10',
+            type === 'password' && 'pr-10',
             error 
-              ? 'border-red-500/50 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' 
+              ? 'border-red-500/40 focus:border-red-500' 
               : success 
-                ? 'border-green-500/50 focus:border-green-500 focus:ring-2 focus:ring-green-500/20'
-                : 'border-slate-600 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20',
+                ? 'border-emerald-500/40 focus:border-emerald-500'
+                : 'border-zinc-800 focus:border-zinc-600',
             className
           )}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
           {...props}
         />
         
@@ -57,46 +52,23 @@ const Input = forwardRef(({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
           >
-            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         )}
-        
-        {/* Animated border glow */}
-        <AnimatePresence>
-          {isFocused && !error && !success && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 rounded-lg pointer-events-none"
-              style={{
-                boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)',
-              }}
-            />
-          )}
-        </AnimatePresence>
       </div>
       
-      {/* Helper text / Error / Success messages */}
-      <AnimatePresence mode="wait">
-        {(error || success || helperText) && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className={cn(
-              'flex items-center gap-1 mt-2 text-sm',
-              error ? 'text-red-400' : success ? 'text-green-400' : 'text-slate-400'
-            )}
-          >
-            {error && <AlertCircle className="w-4 h-4" />}
-            {success && <CheckCircle className="w-4 h-4" />}
-            <span>{error || success || helperText}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {(error || success || helperText) && (
+        <div className={cn(
+          'flex items-center gap-1 mt-1.5 text-xs',
+          error ? 'text-red-400' : success ? 'text-emerald-400' : 'text-zinc-500'
+        )}>
+          {error && <AlertCircle className="w-3 h-3" />}
+          {success && <CheckCircle className="w-3 h-3" />}
+          <span>{error || success || helperText}</span>
+        </div>
+      )}
     </div>
   );
 });

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Search as SearchIcon, Filter, Star, GitFork, Clock, Code, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { CardSkeleton } from '../components/ui/Loading';
@@ -67,341 +67,158 @@ const SearchPage = ({ user }) => {
     setFilters({ language: '', minStars: '', topic: '', sortBy: 'relevance' });
   };
 
-  const styles = {
-    container: {
-      width: '100%',
-      maxWidth: '1280px',
-      margin: '0 auto',
-      padding: '0 24px',
-    },
-    heading: {
-      fontSize: '36px',
-      fontWeight: 'bold',
-      color: '#ffffff',
-      marginBottom: '16px',
-      textAlign: 'center',
-    },
-    subheading: {
-      fontSize: '16px',
-      color: '#94a3b8',
-      textAlign: 'center',
-      maxWidth: '640px',
-      margin: '0 auto 40px',
-    },
-    searchContainer: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '16px',
-      marginBottom: '32px',
-    },
-    searchInputWrapper: {
-      flex: '1',
-      minWidth: '300px',
-      position: 'relative',
-    },
-    searchInput: {
-      width: '100%',
-      backgroundColor: 'rgba(30, 41, 59, 0.5)',
-      border: '1px solid rgba(71, 85, 105, 1)',
-      borderRadius: '12px',
-      padding: '16px 16px 16px 48px',
-      color: '#ffffff',
-      fontSize: '16px',
-      outline: 'none',
-    },
-    searchIcon: {
-      position: 'absolute',
-      left: '16px',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      color: '#94a3b8',
-      width: '20px',
-      height: '20px',
-    },
-    buttonGroup: {
-      display: 'flex',
-      gap: '8px',
-    },
-    emptyState: {
-      textAlign: 'center',
-      padding: '80px 0',
-    },
-    emptyIcon: {
-      width: '80px',
-      height: '80px',
-      borderRadius: '50%',
-      backgroundColor: 'rgba(30, 41, 59, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '0 auto 16px',
-    },
-  };
+  const selectClass = "w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500";
+  const inputClass = "w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500";
 
   return (
-    <div style={{ width: '100%', padding: '32px 0' }}>
-      <div style={styles.container}>
+    <div className="w-full py-12">
+      <div className="max-w-5xl mx-auto px-16 sm:px-20 lg:px-32">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ marginBottom: '40px' }}
-        >
-          <h1 style={styles.heading}>Explore Repositories</h1>
-          <p style={styles.subheading}>
+        <div className="mb-16 text-center">
+          <h1 className="text-2xl font-bold text-zinc-100 mb-2">Explore Repositories</h1>
+          <p className="text-sm text-zinc-500 max-w-md mx-auto leading-relaxed">
             Search through millions of open-source projects and find the perfect match for your skills.
           </p>
-        </motion.div>
+        </div>
 
         {/* Search Bar */}
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          onSubmit={handleSearch}
-          style={styles.searchContainer}
-        >
-          <div style={styles.searchInputWrapper}>
-            <SearchIcon style={styles.searchIcon} />
+        <form onSubmit={handleSearch} className="flex items-center gap-3 mb-8">
+          <div className="flex-1 relative">
+            <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search repositories by name, description, or technology..."
-              style={styles.searchInput}
+              placeholder="Search by name, description, or technology..."
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             />
           </div>
-          <div style={styles.buttonGroup}>
+          <div className="flex gap-2 shrink-0">
             <Button
               type="button"
               variant="secondary"
+              size="sm"
               icon={Filter}
               onClick={() => setShowFilters(!showFilters)}
             >
               Filters
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" size="sm" loading={loading}>
               Search
             </Button>
           </div>
-        </motion.form>
+        </form>
 
         {/* Filters Panel */}
         {showFilters && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            style={{ marginBottom: '32px' }}
-          >
-            <div style={{
-              backgroundColor: 'rgba(30, 41, 59, 0.3)',
-              border: '1px solid rgba(71, 85, 105, 0.5)',
-              borderRadius: '16px',
-              padding: '24px',
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#ffffff' }}>Filters</h3>
-                <button
-                  onClick={clearFilters}
-                  style={{ fontSize: '14px', color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer' }}
-                >
-                  Clear all
-                </button>
+          <div className="mb-12 bg-zinc-900 border border-zinc-800 rounded-xl p-7">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-sm font-semibold text-zinc-200">Filters</h3>
+              <button
+                onClick={clearFilters}
+                className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                Clear all
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div>
+                <label className="block text-[10px] uppercase tracking-wider text-zinc-500 font-medium mb-1.5">Language</label>
+                <select value={filters.language} onChange={(e) => setFilters({ ...filters, language: e.target.value })} className={selectClass}>
+                  <option value="">All Languages</option>
+                  {languages.map((lang) => (
+                    <option key={lang} value={lang}>{lang}</option>
+                  ))}
+                </select>
               </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                {/* Language Filter */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#cbd5e1', marginBottom: '8px' }}>
-                    Language
-                  </label>
-                  <select
-                    value={filters.language}
-                    onChange={(e) => setFilters({ ...filters, language: e.target.value })}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
-                      borderRadius: '8px',
-                      padding: '10px 16px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                    }}
-                  >
-                    <option value="">All Languages</option>
-                    {languages.map((lang) => (
-                      <option key={lang} value={lang}>{lang}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Min Stars */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#cbd5e1', marginBottom: '8px' }}>
-                    Minimum Stars
-                  </label>
-                  <input
-                    type="number"
-                    value={filters.minStars}
-                    onChange={(e) => setFilters({ ...filters, minStars: e.target.value })}
-                    placeholder="e.g., 1000"
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
-                      borderRadius: '8px',
-                      padding: '10px 16px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                    }}
-                  />
-                </div>
-
-                {/* Topic */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#cbd5e1', marginBottom: '8px' }}>
-                    Topic
-                  </label>
-                  <input
-                    type="text"
-                    value={filters.topic}
-                    onChange={(e) => setFilters({ ...filters, topic: e.target.value })}
-                    placeholder="e.g., machine-learning"
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
-                      borderRadius: '8px',
-                      padding: '10px 16px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                    }}
-                  />
-                </div>
-
-                {/* Sort By */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#cbd5e1', marginBottom: '8px' }}>
-                    Sort By
-                  </label>
-                  <select
-                    value={filters.sortBy}
-                    onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
-                      borderRadius: '8px',
-                      padding: '10px 16px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                    }}
-                  >
-                    {sortOptions.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-wider text-zinc-500 font-medium mb-1.5">Min Stars</label>
+                <input type="number" value={filters.minStars} onChange={(e) => setFilters({ ...filters, minStars: e.target.value })} placeholder="e.g., 1000" className={inputClass} />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-wider text-zinc-500 font-medium mb-1.5">Topic</label>
+                <input type="text" value={filters.topic} onChange={(e) => setFilters({ ...filters, topic: e.target.value })} placeholder="e.g., machine-learning" className={inputClass} />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-wider text-zinc-500 font-medium mb-1.5">Sort By</label>
+                <select value={filters.sortBy} onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })} className={selectClass}>
+                  {sortOptions.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Results */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="flex flex-col gap-6">
           {loading ? (
             Array(3).fill(null).map((_, i) => (
               <CardSkeleton key={i} />
             ))
           ) : repositories.length > 0 ? (
-            repositories.map((repo, index) => (
-              <motion.div
-                key={repo.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card hover className="group">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-                    <img
-                      src={repo.owner.avatarUrl}
-                      alt={repo.owner.login}
-                      style={{ width: '48px', height: '48px', borderRadius: '12px', border: '1px solid #475569' }}
-                    />
-                    <div style={{ flex: '1', minWidth: '200px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', marginBottom: '8px' }}>
-                        <div>
-                          <a
-                            href={`/repository/${repo.owner.login}/${repo.name}`}
-                            style={{ fontSize: '20px', fontWeight: '600', color: '#ffffff', textDecoration: 'none' }}
-                          >
-                            {repo.fullName}
-                          </a>
-                          <p style={{ color: '#94a3b8', marginTop: '4px' }}>{repo.description}</p>
-                        </div>
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '6px 12px',
-                          borderRadius: '8px',
-                          background: 'linear-gradient(to right, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2))',
-                          border: '1px solid rgba(99, 102, 241, 0.3)',
-                        }}>
-                          <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffffff' }}>{repo.matchScore}</span>
-                          <span style={{ fontSize: '12px', color: '#94a3b8' }}>Match</span>
-                        </div>
+            repositories.map((repo) => (
+              <Card key={repo.id} hover>
+                <div className="flex flex-wrap gap-4">
+                  <img
+                    src={repo.owner.avatarUrl}
+                    alt={repo.owner.login}
+                    className="w-10 h-10 rounded-lg border border-zinc-800"
+                  />
+                  <div className="flex-1 min-w-50">
+                    <div className="flex justify-between items-start gap-3 mb-1.5">
+                      <div>
+                        <Link
+                          to={`/repository/${repo.owner.login}/${repo.name}`}
+                          className="text-sm font-semibold text-zinc-100 hover:text-indigo-400 transition-colors"
+                        >
+                          {repo.fullName}
+                        </Link>
+                        <p className="text-xs text-zinc-500 mt-0.5">{repo.description}</p>
                       </div>
+                      <span className="shrink-0 text-xs text-indigo-400 px-2 py-1 bg-indigo-500/10 rounded border border-indigo-500/20">
+                        {repo.matchScore}% match
+                      </span>
+                    </div>
 
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
-                        {repo.topics.slice(0, 5).map((topic) => (
-                          <span
-                            key={topic}
-                            style={{
-                              padding: '4px 8px',
-                              borderRadius: '6px',
-                              backgroundColor: 'rgba(51, 65, 85, 0.5)',
-                              color: '#cbd5e1',
-                              fontSize: '12px',
-                            }}
-                          >
-                            #{topic}
-                          </span>
-                        ))}
-                      </div>
+                    <div className="flex flex-wrap gap-1.5 mb-2.5">
+                      {repo.topics.slice(0, 5).map((topic) => (
+                        <span key={topic} className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[10px]">
+                          #{topic}
+                        </span>
+                      ))}
+                    </div>
 
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '14px', color: '#94a3b8' }}>
-                        {repo.language && (
-                          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: getLanguageColor(repo.language) }} />
-                            {repo.language}
-                          </span>
-                        )}
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Star style={{ width: '16px', height: '16px' }} />
-                          {formatNumber(repo.stars)}
+                    <div className="flex flex-wrap gap-3 text-xs text-zinc-500">
+                      {repo.language && (
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: getLanguageColor(repo.language) }} />
+                          {repo.language}
                         </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <GitFork style={{ width: '16px', height: '16px' }} />
-                          {formatNumber(repo.forks)}
-                        </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Clock style={{ width: '16px', height: '16px' }} />
-                          Updated {formatRelativeTime(repo.updatedAt)}
-                        </span>
-                      </div>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <Star className="w-3 h-3" /> {formatNumber(repo.stars)}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <GitFork className="w-3 h-3" /> {formatNumber(repo.forks)}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> {formatRelativeTime(repo.updatedAt)}
+                      </span>
                     </div>
                   </div>
-                </Card>
-              </motion.div>
+                </div>
+              </Card>
             ))
           ) : (
-            <div style={styles.emptyState}>
-              <div style={styles.emptyIcon}>
-                <Code style={{ width: '40px', height: '40px', color: '#475569' }} />
+            <div className="flex flex-col items-center justify-center py-24">
+              <div className="w-16 h-16 rounded-2xl bg-zinc-800/80 flex items-center justify-center mb-4">
+                <Code className="w-7 h-7 text-zinc-500" />
               </div>
-              <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' }}>Start your search</h3>
-              <p style={{ color: '#94a3b8' }}>Enter a search query to find repositories</p>
+              <h3 className="text-base font-semibold text-zinc-200 mb-1">Start your search</h3>
+              <p className="text-sm text-zinc-500">Enter a query to find repositories</p>
             </div>
           )}
         </div>

@@ -4,22 +4,9 @@ import Footer from './Footer';
 
 const Layout = ({ user, onLogout }) => {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: '#0f172a'
-    }}>
-      {/* Fixed navbar */}
+    <div className="min-h-screen flex flex-col bg-zinc-950">
       <Navbar user={user} onLogout={onLogout} />
-
-      {/* Main content with explicit top padding to clear fixed navbar */}
-      <main style={{
-        flex: 1,
-        paddingTop: '64px',
-        width: '100%',
-        minHeight: '100vh'
-      }}>
+      <main className="flex-1 pt-20 w-full">
         <Outlet />
       </main>
 

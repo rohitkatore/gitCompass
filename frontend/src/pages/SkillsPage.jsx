@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
 import {
   FileText,
@@ -186,316 +186,287 @@ const SkillsPage = () => {
   const hasSkills = skills.length > 0;
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="w-full py-12">
+      <div className="max-w-6xl mx-auto px-16 sm:px-20 lg:px-32">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Your Skills Profile
+        <div className="mb-14">
+          <h1 className="text-xl font-semibold text-zinc-100 mb-1.5">
+            Skills Profile
           </h1>
-          <p className="text-slate-400">
+          <p className="text-sm text-zinc-500">
             {hasSkills
               ? 'Manage your skills to get personalized project recommendations'
               : 'Upload your resume or add skills manually to get started'}
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left Column - Add Skills */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Resume Upload Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card>
-                <Card.Header>
-                  <Card.Title className="flex items-center gap-2">
-                    <Upload className="w-5 h-5 text-indigo-400" />
-                    {hasResume ? 'Resume Uploaded' : 'Upload Resume'}
-                  </Card.Title>
-                  <Card.Description>
-                    {hasResume
-                      ? `Last uploaded: ${resumeInfo?.filename}`
-                      : 'Extract skills automatically from your resume'}
-                  </Card.Description>
-                </Card.Header>
+            <Card>
+              <Card.Header>
+                <Card.Title className="flex items-center gap-2">
+                  <Upload className="w-4 h-4 text-indigo-400" />
+                  {hasResume ? 'Resume Uploaded' : 'Upload Resume'}
+                </Card.Title>
+                <Card.Description>
+                  {hasResume
+                    ? `Last uploaded: ${resumeInfo?.filename}`
+                    : 'Extract skills automatically from your resume'}
+                </Card.Description>
+              </Card.Header>
 
-                <Card.Content>
-                  <AnimatePresence mode="wait">
-                    {uploadState === 'idle' && !hasResume && (
-                      <motion.div
-                        key="dropzone"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+              <Card.Content>
+                <AnimatePresence mode="wait">
+                  {uploadState === 'idle' && !hasResume && (
+                    <motion.div
+                      key="dropzone"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <div
+                        {...getRootProps()}
+                        className={`border border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+                          isDragActive
+                            ? 'border-indigo-500 bg-indigo-500/5'
+                            : 'border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30'
+                        }`}
                       >
-                        <div
-                          {...getRootProps()}
-                          className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
-                            isDragActive
-                              ? 'border-indigo-500 bg-indigo-500/10'
-                              : 'border-slate-700 hover:border-indigo-500/50 hover:bg-slate-800/50'
-                          }`}
-                        >
-                          <input {...getInputProps()} />
-                          <div className="w-14 h-14 rounded-xl bg-slate-800 flex items-center justify-center mx-auto mb-4">
-                            <FileText className="w-7 h-7 text-slate-400" />
-                          </div>
-                          <p className="text-white font-medium mb-1">
-                            {isDragActive ? 'Drop your resume here' : 'Drag & drop your resume'}
-                          </p>
-                          <p className="text-sm text-slate-500">
-                            PDF, DOC, or DOCX (max 5MB)
-                          </p>
+                        <input {...getInputProps()} />
+                        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mx-auto mb-3">
+                          <FileText className="w-5 h-5 text-zinc-500" />
                         </div>
-                      </motion.div>
-                    )}
-
-                    {uploadState === 'uploading' && (
-                      <motion.div
-                        key="uploading"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-center py-8"
-                      >
-                        <Spinner className="mx-auto mb-4" />
-                        <p className="text-white font-medium">Analyzing your resume...</p>
-                        <p className="text-sm text-slate-500">Extracting skills with AI</p>
-                      </motion.div>
-                    )}
-
-                    {(uploadState === 'success' || hasResume) && uploadState !== 'uploading' && (
-                      <motion.div
-                        key="success"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-center py-6"
-                      >
-                        <div className="w-14 h-14 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                          <CheckCircle className="w-8 h-8 text-green-500" />
-                        </div>
-                        <p className="text-white font-medium mb-1">Resume processed!</p>
-                        <p className="text-sm text-slate-500 mb-4">
-                          {resumeInfo?.filename}
+                        <p className="text-zinc-200 text-sm font-medium mb-0.5">
+                          {isDragActive ? 'Drop your resume here' : 'Drag & drop your resume'}
                         </p>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => {
-                            setUploadState('idle');
-                            setHasResume(false);
-                          }}
-                          icon={RefreshCw}
-                        >
-                          Upload New
-                        </Button>
-                      </motion.div>
-                    )}
+                        <p className="text-xs text-zinc-600">
+                          PDF, DOC, or DOCX (max 5MB)
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
 
-                    {uploadState === 'error' && (
-                      <motion.div
-                        key="error"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-center py-6"
+                  {uploadState === 'uploading' && (
+                    <motion.div
+                      key="uploading"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="text-center py-6"
+                    >
+                      <Spinner className="mx-auto mb-3" />
+                      <p className="text-zinc-200 text-sm font-medium">Analyzing your resume...</p>
+                      <p className="text-xs text-zinc-500">Extracting skills with AI</p>
+                    </motion.div>
+                  )}
+
+                  {(uploadState === 'success' || hasResume) && uploadState !== 'uploading' && (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="text-center py-4"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center mx-auto mb-3">
+                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <p className="text-zinc-200 text-sm font-medium mb-0.5">Resume processed!</p>
+                      <p className="text-xs text-zinc-500 mb-3">
+                        {resumeInfo?.filename}
+                      </p>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          setUploadState('idle');
+                          setHasResume(false);
+                        }}
+                        icon={RefreshCw}
                       >
-                        <div className="w-14 h-14 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
-                          <XCircle className="w-8 h-8 text-red-500" />
-                        </div>
-                        <p className="text-white font-medium mb-1">Upload failed</p>
-                        <p className="text-sm text-red-400 mb-4">{uploadError}</p>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => setUploadState('idle')}
-                        >
-                          Try Again
-                        </Button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Card.Content>
-              </Card>
-            </motion.div>
+                        Upload New
+                      </Button>
+                    </motion.div>
+                  )}
+
+                  {uploadState === 'error' && (
+                    <motion.div
+                      key="error"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="text-center py-4"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center mx-auto mb-3">
+                        <XCircle className="w-5 h-5 text-red-500" />
+                      </div>
+                      <p className="text-zinc-200 text-sm font-medium mb-0.5">Upload failed</p>
+                      <p className="text-xs text-red-400 mb-3">{uploadError}</p>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setUploadState('idle')}
+                      >
+                        Try Again
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Card.Content>
+            </Card>
 
             {/* Manual Skill Input */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card>
-                <Card.Header>
-                  <Card.Title className="flex items-center gap-2">
-                    <Plus className="w-5 h-5 text-green-400" />
-                    Add Skills Manually
-                  </Card.Title>
-                  <Card.Description>
-                    Add your technical skills, frameworks, and tools
-                  </Card.Description>
-                </Card.Header>
+            <Card>
+              <Card.Header>
+                <Card.Title className="flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-emerald-400" />
+                  Add Manually
+                </Card.Title>
+                <Card.Description>
+                  Add your technical skills, frameworks, and tools
+                </Card.Description>
+              </Card.Header>
 
-                <Card.Content>
-                  <form onSubmit={handleAddSkill} className="flex gap-2">
-                    <Input
-                      type="text"
-                      placeholder="e.g., React, Python, Docker..."
-                      value={newSkill}
-                      onChange={(e) => setNewSkill(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="submit"
-                      disabled={!newSkill.trim() || addingSkill}
-                      loading={addingSkill}
-                      icon={Plus}
-                    >
-                      Add
-                    </Button>
-                  </form>
+              <Card.Content>
+                <form onSubmit={handleAddSkill} className="flex gap-3">
+                  <Input
+                    type="text"
+                    placeholder="e.g., React, Python, Docker..."
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={!newSkill.trim() || addingSkill}
+                    loading={addingSkill}
+                    size="sm"
+                    icon={Plus}
+                  >
+                    Add
+                  </Button>
+                </form>
 
-                  {/* Quick Add Suggestions */}
-                  <div className="mt-4">
-                    <p className="text-xs text-slate-500 mb-2">Quick add:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {['JavaScript', 'Python', 'React', 'Node.js', 'TypeScript', 'Java', 'Go', 'Docker']
-                        .filter(s => !skills.some(sk => sk.name.toLowerCase() === s.toLowerCase()))
-                        .slice(0, 5)
-                        .map((skill) => (
-                          <button
-                            key={skill}
-                            onClick={() => setNewSkill(skill)}
-                            className="px-2 py-1 text-xs rounded-md bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
-                          >
-                            + {skill}
-                          </button>
-                        ))}
-                    </div>
+                {/* Quick Add Suggestions */}
+                <div className="mt-3">
+                  <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-1.5">Quick add</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['JavaScript', 'Python', 'React', 'Node.js', 'TypeScript', 'Java', 'Go', 'Docker']
+                      .filter(s => !skills.some(sk => sk.name.toLowerCase() === s.toLowerCase()))
+                      .slice(0, 5)
+                      .map((skill) => (
+                        <button
+                          key={skill}
+                          onClick={() => setNewSkill(skill)}
+                          className="px-2 py-1 text-xs rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 transition-colors border border-zinc-800 hover:border-zinc-700"
+                        >
+                          + {skill}
+                        </button>
+                      ))}
                   </div>
-                </Card.Content>
-              </Card>
-            </motion.div>
+                </div>
+              </Card.Content>
+            </Card>
           </div>
 
           {/* Right Column - Skills List */}
-          <div className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Card>
-                <Card.Header>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Card.Title className="flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-purple-400" />
-                        Your Skills ({skills.length})
-                      </Card.Title>
-                      <Card.Description>
-                        {hasSkills ? 'Click to remove a skill' : 'No skills added yet'}
-                      </Card.Description>
-                    </div>
-                    {hasSkills && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleClearAll}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    )}
+          <div className="space-y-8">
+            <Card>
+              <Card.Header>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Card.Title className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-violet-400" />
+                      Your Skills ({skills.length})
+                    </Card.Title>
+                    <Card.Description>
+                      {hasSkills ? 'Click to remove a skill' : 'No skills added yet'}
+                    </Card.Description>
                   </div>
-                </Card.Header>
-
-                <Card.Content>
-                  {hasSkills ? (
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                      {skills.map((skill, index) => (
-                        <motion.div
-                          key={skill.name}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.03 }}
-                          className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 group transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Code className="w-4 h-4 text-slate-500" />
-                            <span className="text-white">{skill.name}</span>
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
-                              {skill.category}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            {skill.confidence && (
-                              <div className="flex items-center gap-2">
-                                <div className="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                                  <div
-                                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500"
-                                    style={{ width: `${skill.confidence}%` }}
-                                  />
-                                </div>
-                                <span className="text-xs text-slate-500 w-8">
-                                  {skill.confidence}%
-                                </span>
-                              </div>
-                            )}
-                            <button
-                              onClick={() => handleDeleteSkill(skill.name)}
-                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/20 rounded transition-all"
-                            >
-                              <X className="w-4 h-4 text-red-400" />
-                            </button>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mx-auto mb-4">
-                        <AlertCircle className="w-8 h-8 text-slate-600" />
-                      </div>
-                      <p className="text-slate-400 mb-2">No skills added yet</p>
-                      <p className="text-sm text-slate-500">
-                        Upload your resume or add skills manually
-                      </p>
-                    </div>
+                  {hasSkills && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClearAll}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
                   )}
-                </Card.Content>
-              </Card>
-            </motion.div>
+                </div>
+              </Card.Header>
+
+              <Card.Content>
+                {hasSkills ? (
+                  <div className="space-y-3 max-h-100 overflow-y-auto pr-1">
+                    {skills.map((skill) => (
+                      <div
+                        key={skill.name}
+                        className="flex items-center justify-between p-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-800 group transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Code className="w-3.5 h-3.5 text-zinc-500" />
+                          <span className="text-zinc-200 text-sm">{skill.name}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700/50">
+                            {skill.category}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {skill.confidence && (
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-10 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-indigo-500 rounded-full"
+                                  style={{ width: `${skill.confidence}%` }}
+                                />
+                              </div>
+                              <span className="text-[10px] text-zinc-600 w-6 text-right">
+                                {skill.confidence}%
+                              </span>
+                            </div>
+                          )}
+                          <button
+                            onClick={() => handleDeleteSkill(skill.name)}
+                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/10 rounded transition-all"
+                          >
+                            <X className="w-3.5 h-3.5 text-red-400" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mx-auto mb-3">
+                      <AlertCircle className="w-5 h-5 text-zinc-500" />
+                    </div>
+                    <p className="text-zinc-400 text-sm mb-1">No skills added yet</p>
+                    <p className="text-xs text-zinc-600">
+                      Upload your resume or add skills manually
+                    </p>
+                  </div>
+                )}
+              </Card.Content>
+            </Card>
 
             {/* Get Recommendations Button */}
             {hasSkills && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
+              <div className="text-center">
                 <Button
                   onClick={handleGetRecommendations}
                   loading={loadingRecommendations}
-                  className="w-full py-4 text-lg"
+                  variant="secondary"
+                  size="md"
                   icon={Target}
-                  iconPosition="left"
                 >
                   Get Project Recommendations
-                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                <p className="text-center text-sm text-slate-500 mt-2">
+                <p className="text-xs text-zinc-600 mt-2">
                   Based on your {skills.length} skill{skills.length > 1 ? 's' : ''}
                 </p>
-              </motion.div>
+              </div>
             )}
           </div>
         </div>

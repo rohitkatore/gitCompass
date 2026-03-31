@@ -27,7 +27,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-xs text-zinc-600">
-            &copy; {currentYear} GitCompass
+            {currentYear} GitCompass. All rights reserved.
           </p>
         </div>
       </div>

@@ -86,6 +86,13 @@ export const guideAPI = {
   generate: (repoData, userContext) => api.post('/guide/generate', { repoData, userContext }),
 };
 
+export const aiAPI = {
+  explain: (code, language, context) => api.post('/ai/explain', { code, language, context }),
+  review: (code, language, context) => api.post('/ai/review', { code, language, context }),
+  generatePR: (data) => api.post('/ai/generate-pr', data),
+  createPR: (data) => api.post('/ai/create-pr', data),
+};
+
 // Alias exports for easier import
 export const resumeService = {
   uploadResume: (file) => {

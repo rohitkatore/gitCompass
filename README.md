@@ -44,6 +44,44 @@ gitCompass/
 - MongoDB Atlas account (or Docker)
 - GitHub OAuth App
 
+### ⚡ Option 0: One-Command Setup (Local Dev)
+
+Clone the repo, then run **one command** to install everything automatically:
+
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/rohitkatore/gitCompass.git
+cd gitCompass
+.\setup.ps1
+```
+
+**Linux / macOS:**
+```bash
+git clone https://github.com/rohitkatore/gitCompass.git
+cd gitCompass
+chmod +x setup.sh && ./setup.sh
+```
+
+The script will:
+1. Copy all `.env.example` files → ready to fill in your keys
+2. Install all Node.js dependencies (root, frontend, backend)  
+3. Create a Python `.venv` and install all AI-engine dependencies  
+4. Download the spaCy English model  
+
+After it finishes, fill in your API keys in `backend/.env` and `ai-engine/.env`, then start:
+```bash
+# Terminal 1 – Frontend + Backend
+npm run dev
+
+# Terminal 2 – AI Engine
+# Windows:
+.venv\Scripts\python.exe ai-engine\main.py
+# Linux/macOS:
+.venv/bin/python ai-engine/main.py
+```
+
+---
+
 ### Option 1: Docker (Recommended)
 
 ```bash

@@ -17,7 +17,7 @@ import {
   Code,
   RefreshCw,
 } from 'lucide-react';
-import { Card, Button, Input, Spinner } from '../components/ui';
+import { Card, Button, Input, Container, Spinner } from '../components/ui';
 import api from '../api/axios';
 
 const SkillsPage = () => {
@@ -26,15 +26,15 @@ const SkillsPage = () => {
   const [skills, setSkills] = useState([]);
   const [hasResume, setHasResume] = useState(false);
   const [resumeInfo, setResumeInfo] = useState(null);
-  
+
   // Upload state
   const [uploadState, setUploadState] = useState('idle'); // idle, uploading, success, error
   const [uploadError, setUploadError] = useState('');
-  
+
   // Manual skill input
   const [newSkill, setNewSkill] = useState('');
   const [addingSkill, setAddingSkill] = useState(false);
-  
+
   // Recommendations
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
 
@@ -94,11 +94,11 @@ const SkillsPage = () => {
       }
     } catch (error) {
       console.error('Upload error:', error);
-      const errorMsg = error.response?.data?.message || 
-                       error.message === 'Unexpected response format' ? 'Failed to process response' :
-                       error.code === 'ECONNABORTED' ? 'Upload timed out after 90 seconds. Please try a smaller file or try again.' :
-                       error.code === 'ERR_NETWORK' ? 'Network error. Please check if the backend server is running.' :
-                       'Failed to process resume. Please try again.';
+      const errorMsg = error.response?.data?.message ||
+        error.message === 'Unexpected response format' ? 'Failed to process response' :
+        error.code === 'ECONNABORTED' ? 'Upload timed out after 90 seconds. Please try a smaller file or try again.' :
+          error.code === 'ERR_NETWORK' ? 'Network error. Please check if the backend server is running.' :
+            'Failed to process resume. Please try again.';
       setUploadError(errorMsg);
       setUploadState('error');
     }
@@ -152,7 +152,7 @@ const SkillsPage = () => {
   // Clear all skills
   const handleClearAll = async () => {
     if (!confirm('Are you sure you want to clear all skills?')) return;
-    
+
     try {
       const response = await api.delete('/skills/all');
       if (response.success) {
@@ -169,7 +169,7 @@ const SkillsPage = () => {
   // Get recommendations
   const handleGetRecommendations = async () => {
     if (skills.length === 0) return;
-    
+
     setLoadingRecommendations(true);
     // Navigate to dashboard which will fetch recommendations
     navigate('/dashboard', { state: { fetchRecommendations: true } });
@@ -177,7 +177,7 @@ const SkillsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center py-32">
         <Spinner size="lg" />
       </div>
     );
@@ -187,22 +187,22 @@ const SkillsPage = () => {
 
   return (
     <div className="w-full py-12">
-      <div className="max-w-6xl mx-auto px-16 sm:px-20 lg:px-32">
+      <Container size="lg">
         {/* Header */}
-        <div className="mb-14">
-          <h1 className="text-xl font-semibold text-zinc-100 mb-1.5">
+        <div className="mb-10 text-center">
+          <h1 className="text-2xl font-semibold text-zinc-100 mb-2">
             Skills Profile
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-base text-zinc-500 max-w-2xl mx-auto">
             {hasSkills
               ? 'Manage your skills to get personalized project recommendations'
               : 'Upload your resume or add skills manually to get started'}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Add Skills */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Resume Upload Section */}
             <Card>
               <Card.Header>
@@ -228,11 +228,10 @@ const SkillsPage = () => {
                     >
                       <div
                         {...getRootProps()}
-                        className={`border border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
-                          isDragActive
-                            ? 'border-indigo-500 bg-indigo-500/5'
-                            : 'border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30'
-                        }`}
+                        className={`border border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${isDragActive
+                          ? 'border-indigo-500 bg-indigo-500/5'
+                          : 'border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30'
+                          }`}
                       >
                         <input {...getInputProps()} />
                         <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mx-auto mb-3">
@@ -372,7 +371,7 @@ const SkillsPage = () => {
           </div>
 
           {/* Right Column - Skills List */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             <Card>
               <Card.Header>
                 <div className="flex items-center justify-between">
@@ -470,7 +469,7 @@ const SkillsPage = () => {
             )}
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 };

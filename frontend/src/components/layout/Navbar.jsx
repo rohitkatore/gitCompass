@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, X, Github, LogOut, Search, Compass, LayoutDashboard, Zap } from 'lucide-react';
+import { Menu, X, Github, LogOut, Search, Compass, LayoutDashboard, Zap, Bot } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Button from '../ui/Button';
 
@@ -19,46 +19,47 @@ const Navbar = ({ user, onLogout }) => {
   const navLinks = [
     { path: '/search', label: 'Explore', icon: Search },
     { path: '/skills', label: 'Skills', icon: Zap },
+    { path: '/ai', label: 'AI Bot', icon: Bot },
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   ];
 
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 h-14 transition-all duration-200',
+        'fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-200',
         isScrolled
           ? 'bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800'
           : 'bg-zinc-950/60 backdrop-blur-md border-b border-transparent'
       )}
     >
-      <div className="max-w-7xl mx-auto px-16 sm:px-20 lg:px-32 h-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-indigo-500 flex items-center justify-center">
-              <Compass className="w-4 h-4 text-white" />
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
+              <Compass className="w-4.5 h-4.5 text-white" />
             </div>
-            <span className="text-sm font-semibold text-zinc-100">
+            <span className="text-base font-semibold text-zinc-100">
               GitCompass
             </span>
           </Link>
 
           {/* Desktop Navigation — compact pill style */}
           <div className="hidden md:flex items-center">
-            <div className="flex items-center bg-zinc-900/60 rounded-lg p-0.5 border border-zinc-800/50">
+            <div className="flex items-center bg-zinc-900/60 rounded-lg p-1 border border-zinc-800/50">
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.path;
                 return (
                   <Link key={link.path} to={link.path}>
                     <div
                       className={cn(
-                        'relative flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150',
+                        'relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150',
                         isActive
                           ? 'text-zinc-100 bg-zinc-800'
                           : 'text-zinc-500 hover:text-zinc-300'
                       )}
                     >
-                      <link.icon className="w-3.5 h-3.5" />
+                      <link.icon className="w-4 h-4" />
                       {link.label}
                     </div>
                   </Link>
@@ -75,9 +76,9 @@ const Navbar = ({ user, onLogout }) => {
                   <img
                     src={user.avatar || `https://github.com/${user.username}.png`}
                     alt={user.username}
-                    className="w-6 h-6 rounded-full ring-1 ring-zinc-700"
+                    className="w-8 h-8 rounded-full ring-1 ring-zinc-700"
                   />
-                  <span className="text-xs text-zinc-400">{user.username}</span>
+                  <span className="text-sm text-zinc-400">{user.username}</span>
                 </div>
                 <Button variant="ghost" size="sm" icon={LogOut} onClick={onLogout}>
                   Logout

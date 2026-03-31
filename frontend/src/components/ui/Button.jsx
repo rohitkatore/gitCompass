@@ -11,16 +11,16 @@ const variants = {
 };
 
 const sizes = {
-  sm: 'h-8 px-3 text-xs gap-1.5',
-  md: 'h-9 px-4 text-sm gap-2',
-  lg: 'h-11 px-5 text-sm gap-2',
-  xl: 'h-12 px-6 text-base gap-2',
+  sm: 'h-9 px-4 text-sm gap-2',
+  md: 'h-10 px-5 text-sm gap-2',
+  lg: 'h-12 px-6 text-base gap-2.5',
+  xl: 'h-14 px-7 text-base gap-2.5',
 };
 
 const iconSizes = {
-  sm: 'w-3.5 h-3.5',
+  sm: 'w-4 h-4',
   md: 'w-4 h-4',
-  lg: 'w-4 h-4',
+  lg: 'w-5 h-5',
   xl: 'w-5 h-5',
 };
 

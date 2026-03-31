@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
+import Container from '../components/ui/Container';
 import { Spinner, DotsLoader } from '../components/ui/Loading';
 import { formatNumber, formatRelativeTime, getLanguageColor, getDifficultyColor } from '../lib/utils';
 import api from '../api/axios';
@@ -29,7 +30,7 @@ const RepositoryPage = ({ user }) => {
   const [repository, setRepository] = useState(null);
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Issue modal state
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [issueGuide, setIssueGuide] = useState(null);
@@ -40,7 +41,7 @@ const RepositoryPage = ({ user }) => {
   // Classify issue difficulty based on labels and comments
   const classifyDifficulty = (issue) => {
     const labels = issue.labels.map(l => l.name.toLowerCase());
-    
+
     if (labels.includes('good first issue') || labels.includes('beginner') || labels.includes('easy')) {
       return 'easy';
     } else if (labels.includes('help wanted') || labels.includes('intermediate')) {
@@ -48,7 +49,7 @@ const RepositoryPage = ({ user }) => {
     } else if (labels.includes('complex') || labels.includes('advanced') || labels.includes('hard')) {
       return 'hard';
     }
-    
+
     // Classify based on comments count
     if (issue.comments <= 3) return 'easy';
     if (issue.comments <= 10) return 'medium';
@@ -59,23 +60,23 @@ const RepositoryPage = ({ user }) => {
     const fetchRepositoryData = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         // Fetch repository info from GitHub API
         const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-        
+
         if (!repoResponse.ok) {
           throw new Error('Repository not found');
         }
-        
+
         const repoData = await repoResponse.json();
-        
+
         setRepository({
           name: repoData.name,
           fullName: repoData.full_name,
-          owner: { 
-            login: repoData.owner.login, 
-            avatarUrl: repoData.owner.avatar_url 
+          owner: {
+            login: repoData.owner.login,
+            avatarUrl: repoData.owner.avatar_url
           },
           description: repoData.description || 'No description available',
           stars: repoData.stargazers_count,
@@ -96,13 +97,13 @@ const RepositoryPage = ({ user }) => {
         const issuesResponse = await fetch(
           `https://api.github.com/repos/${owner}/${repo}/issues?labels=good%20first%20issue&state=open&per_page=10`
         );
-        
+
         let issuesData = [];
-        
+
         if (issuesResponse.ok) {
           issuesData = await issuesResponse.json();
         }
-        
+
         // If no good first issues, fetch help wanted issues
         if (issuesData.length === 0) {
           const helpWantedResponse = await fetch(
@@ -112,7 +113,7 @@ const RepositoryPage = ({ user }) => {
             issuesData = await helpWantedResponse.json();
           }
         }
-        
+
         // If still no issues, fetch any open issues
         if (issuesData.length === 0) {
           const anyIssuesResponse = await fetch(
@@ -122,10 +123,10 @@ const RepositoryPage = ({ user }) => {
             issuesData = await anyIssuesResponse.json();
           }
         }
-        
+
         // Filter out pull requests (GitHub API returns PRs as issues too)
         const filteredIssues = issuesData.filter(issue => !issue.pull_request);
-        
+
         // Transform issues data
         const transformedIssues = filteredIssues.map(issue => ({
           id: issue.id,
@@ -147,7 +148,7 @@ const RepositoryPage = ({ user }) => {
         }));
 
         setIssues(transformedIssues);
-        
+
       } catch (err) {
         console.error('Error fetching repository data:', err);
         setError(err.message);
@@ -177,9 +178,9 @@ const RepositoryPage = ({ user }) => {
   // Generate guide for selected issue
   const generateGuideForIssue = async () => {
     if (!selectedIssue || !repository) return;
-    
+
     setLoadingGuide(true);
-    
+
     try {
       const response = await api.post('/guide/generate', {
         repoData: {
@@ -259,7 +260,7 @@ const RepositoryPage = ({ user }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center py-32">
         <Spinner size="lg" />
       </div>
     );
@@ -267,14 +268,14 @@ const RepositoryPage = ({ user }) => {
 
   if (error || !repository) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center py-32">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
           <h2 className="text-lg font-bold text-zinc-100 mb-1">
             {error === 'Repository not found' ? 'Repository not found' : 'Failed to load repository'}
           </h2>
           <p className="text-sm text-zinc-500 mb-4">
-            {error === 'Repository not found' 
+            {error === 'Repository not found'
               ? "The repository you're looking for doesn't exist."
               : 'There was an error loading the repository. Please try again.'}
           </p>
@@ -288,7 +289,7 @@ const RepositoryPage = ({ user }) => {
 
   return (
     <div className="w-full py-12">
-      <div className="max-w-6xl mx-auto px-16 sm:px-20 lg:px-32">
+      <Container size="lg">
         {/* Back Button */}
         <div className="mb-8">
           <Link
@@ -309,7 +310,7 @@ const RepositoryPage = ({ user }) => {
                 alt={repository.owner.login}
                 className="w-14 h-14 rounded-xl border border-zinc-800"
               />
-              
+
               <div className="grow">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -317,7 +318,7 @@ const RepositoryPage = ({ user }) => {
                       {repository.fullName}
                     </h1>
                     <p className="text-sm text-zinc-500 mb-3">{repository.description}</p>
-                    
+
                     <div className="flex flex-wrap gap-1.5">
                       {repository.topics.map((topic) => (
                         <span
@@ -329,7 +330,7 @@ const RepositoryPage = ({ user }) => {
                       ))}
                     </div>
                   </div>
-                  
+
                   <a
                     href={repository.htmlUrl}
                     target="_blank"
@@ -389,55 +390,54 @@ const RepositoryPage = ({ user }) => {
           {/* Issues Section */}
           <div className="lg:col-span-2">
             <Card padding="none">
-                <div className="p-4 border-b border-zinc-800">
-                  <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-emerald-400" />
-                    Good First Issues
-                  </h2>
-                  <p className="text-xs text-zinc-500 mt-0.5">
-                    Issues that are great for first-time contributors
-                  </p>
-                </div>
+              <div className="p-4 border-b border-zinc-800">
+                <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-emerald-400" />
+                  Good First Issues
+                </h2>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  Issues that are great for first-time contributors
+                </p>
+              </div>
 
-                <div className="divide-y divide-zinc-800">
-                  {issues.length === 0 ? (
-                    <div className="p-6 text-center">
-                      <AlertCircle className="w-10 h-10 text-zinc-600 mx-auto mb-3" />
-                      <h3 className="text-sm font-medium text-zinc-200 mb-1">No open issues found</h3>
-                      <p className="text-xs text-zinc-500 mb-3">
-                        This repository doesn't have any open issues labeled for beginners right now.
-                      </p>
-                      <a
-                        href={`${repository.htmlUrl}/issues`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button variant="secondary" size="sm" icon={ExternalLink}>
-                          View All Issues on GitHub
-                        </Button>
-                      </a>
-                    </div>
-                  ) : (
-                    issues.map((issue) => (
+              <div className="divide-y divide-zinc-800">
+                {issues.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <AlertCircle className="w-10 h-10 text-zinc-600 mx-auto mb-3" />
+                    <h3 className="text-sm font-medium text-zinc-200 mb-1">No open issues found</h3>
+                    <p className="text-xs text-zinc-500 mb-3">
+                      This repository doesn't have any open issues labeled for beginners right now.
+                    </p>
+                    <a
+                      href={`${repository.htmlUrl}/issues`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="secondary" size="sm" icon={ExternalLink}>
+                        View All Issues on GitHub
+                      </Button>
+                    </a>
+                  </div>
+                ) : (
+                  issues.map((issue) => (
                     <div
                       key={issue.id}
                       onClick={() => openIssueModal(issue)}
                       className="p-4 hover:bg-zinc-800/30 transition-colors cursor-pointer"
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                          issue.difficulty === 'easy' ? 'bg-emerald-500/15 text-emerald-500' :
-                          issue.difficulty === 'medium' ? 'bg-yellow-500/15 text-yellow-500' :
-                          'bg-red-500/15 text-red-500'
-                        }`}>
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${issue.difficulty === 'easy' ? 'bg-emerald-500/15 text-emerald-500' :
+                            issue.difficulty === 'medium' ? 'bg-yellow-500/15 text-yellow-500' :
+                              'bg-red-500/15 text-red-500'
+                          }`}>
                           <AlertCircle className="w-3.5 h-3.5" />
                         </div>
-                        
+
                         <div className="grow min-w-0">
                           <div className="text-sm text-zinc-200 font-medium hover:text-indigo-400 transition-colors line-clamp-1">
                             #{issue.number} {issue.title}
                           </div>
-                          
+
                           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                             {issue.labels.map((label) => (
                               <span
@@ -468,40 +468,40 @@ const RepositoryPage = ({ user }) => {
                             </span>
                           </div>
                         </div>
-                        
+
                         <span className="text-[10px] text-zinc-600 shrink-0">guide →</span>
                       </div>
                     </div>
                   ))
-                  )}
-                </div>
-              </Card>
+                )}
+              </div>
+            </Card>
           </div>
 
           {/* Sidebar - Quick Info */}
           <div className="lg:col-span-1">
-              <Card className="sticky top-20">
-                <Card.Header>
-                  <Card.Title className="flex items-center gap-2 text-sm">
-                    <Sparkles className="w-4 h-4 text-indigo-400" />
-                    AI Contribution Guide
-                  </Card.Title>
-                  <Card.Description>
-                    Click on any issue to get a personalized guide
-                  </Card.Description>
-                </Card.Header>
+            <Card className="sticky top-20">
+              <Card.Header>
+                <Card.Title className="flex items-center gap-2 text-sm">
+                  <Sparkles className="w-4 h-4 text-indigo-400" />
+                  AI Contribution Guide
+                </Card.Title>
+                <Card.Description>
+                  Click on any issue to get a personalized guide
+                </Card.Description>
+              </Card.Header>
 
-                <Card.Content>
-                  <div className="text-center py-4">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-3">
-                      <BookOpen className="w-5 h-5 text-indigo-400" />
-                    </div>
-                    <p className="text-xs text-zinc-500">
-                      Select an issue from the list to generate a personalized contribution guide tailored to that specific issue.
-                    </p>
+              <Card.Content>
+                <div className="text-center py-4">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-3">
+                    <BookOpen className="w-5 h-5 text-indigo-400" />
                   </div>
-                </Card.Content>
-              </Card>
+                  <p className="text-xs text-zinc-500">
+                    Select an issue from the list to generate a personalized contribution guide tailored to that specific issue.
+                  </p>
+                </div>
+              </Card.Content>
+            </Card>
           </div>
         </div>
 
@@ -527,11 +527,10 @@ const RepositoryPage = ({ user }) => {
                   <div className="flex items-start justify-between gap-3">
                     <div className="grow">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] ${
-                          selectedIssue.difficulty === 'easy' ? 'bg-emerald-500/15 text-emerald-500' :
-                          selectedIssue.difficulty === 'medium' ? 'bg-yellow-500/15 text-yellow-500' :
-                          'bg-red-500/15 text-red-500'
-                        }`}>
+                        <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] ${selectedIssue.difficulty === 'easy' ? 'bg-emerald-500/15 text-emerald-500' :
+                            selectedIssue.difficulty === 'medium' ? 'bg-yellow-500/15 text-yellow-500' :
+                              'bg-red-500/15 text-red-500'
+                          }`}>
                           #{selectedIssue.number}
                         </span>
                         <span className={`px-1.5 py-0.5 rounded text-[10px] border ${getDifficultyColor(selectedIssue.difficulty)}`}>
@@ -695,8 +694,8 @@ const RepositoryPage = ({ user }) => {
                   <Button variant="ghost" size="sm" onClick={closeIssueModal}>
                     Close
                   </Button>
-                  <Button 
-                    variant="secondary" 
+                  <Button
+                    variant="secondary"
                     size="sm"
                     icon={ExternalLink}
                     onClick={() => window.open(`${repository?.htmlUrl}/issues/${selectedIssue.number}`, '_blank')}
@@ -708,7 +707,7 @@ const RepositoryPage = ({ user }) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </Container>
     </div>
   );
 };

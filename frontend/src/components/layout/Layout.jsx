@@ -6,7 +6,7 @@ const Layout = ({ user, onLogout }) => {
   return (
     <div className="min-h-screen flex flex-col bg-zinc-950">
       <Navbar user={user} onLogout={onLogout} />
-      <main className="flex-1 pt-20 w-full">
+      <main className="flex-1 pt-16 w-full">
         <Outlet />
       </main>
 

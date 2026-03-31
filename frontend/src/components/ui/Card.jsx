@@ -36,7 +36,7 @@ const CardHeader = ({ children, className, ...props }) => (
 );
 
 const CardTitle = ({ children, className, ...props }) => (
-  <h3 className={cn('text-base font-semibold text-zinc-100', className)} {...props}>
+  <h3 className={cn('text-lg font-semibold text-zinc-100', className)} {...props}>
     {children}
   </h3>
 );

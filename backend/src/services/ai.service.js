@@ -240,6 +240,15 @@ async function createGitHubPR({ owner, repo, head, base, title, body, accessToke
     }
 
     if (status === 404) {
+      // GitHub returns 404 (not 403) when the token lacks 'repo' scope for write operations.
+      // Detect this by checking the X-OAuth-Scopes header from GitHub's response.
+      const tokenScopes = err.response?.headers?.['x-oauth-scopes'] || '';
+      if (tokenScopes && !tokenScopes.split(',').map(s => s.trim()).includes('repo')) {
+        const error = new Error('Your GitHub token is missing the "repo" scope. Please log out and log in again to grant write access.');
+        error.code = 'MISSING_REPO_SCOPE';
+        error.status = 401;
+        throw error;
+      }
       const error = new Error(`Repository ${owner}/${repo} not found, or you don't have access.`);
       error.code = 'REPO_NOT_FOUND';
       error.status = 404;

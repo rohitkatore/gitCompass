@@ -15,6 +15,7 @@ import resumeRoutes from './routes/resume.routes.js';
 import repositoryRoutes from './routes/repository.routes.js';
 import guideRoutes from './routes/guide.routes.js';
 import skillsRoutes from './routes/skills.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -82,6 +83,7 @@ app.use('/api/resume', resumeRoutes);
 app.use('/api/repositories', repositoryRoutes);
 app.use('/api/guide', guideRoutes);
 app.use('/api/skills', skillsRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

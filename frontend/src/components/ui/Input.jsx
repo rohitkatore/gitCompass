@@ -9,12 +9,19 @@ const Input = forwardRef(({
   success,
   helperText,
   icon: Icon,
+  variant = 'default',
   className,
   containerClassName,
   ...props
 }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputType = type === 'password' && showPassword ? 'text' : type;
+
+  // 'default' — for use on page background (zinc-950)
+  // 'elevated' — for use inside cards (zinc-900 background)
+  const bgBorder = variant === 'elevated'
+    ? 'bg-zinc-800 border-zinc-700 focus:border-indigo-500'
+    : 'bg-zinc-900 border-zinc-800 focus:border-zinc-600';
 
   return (
     <div className={cn('w-full', containerClassName)}>
@@ -35,14 +42,15 @@ const Input = forwardRef(({
           ref={ref}
           type={inputType}
           className={cn(
-            'w-full h-9 bg-zinc-900 border rounded-lg px-3 text-sm text-zinc-100 placeholder-zinc-600 transition-colors duration-150 focus:outline-none',
+            'w-full h-9 border rounded-lg px-3 text-sm text-zinc-100 placeholder-zinc-600 transition-colors duration-150 focus:outline-none',
+            bgBorder,
             Icon && 'pl-10',
             type === 'password' && 'pr-10',
-            error 
-              ? 'border-red-500/40 focus:border-red-500' 
-              : success 
+            error
+              ? 'border-red-500/40 focus:border-red-500'
+              : success
                 ? 'border-emerald-500/40 focus:border-emerald-500'
-                : 'border-zinc-800 focus:border-zinc-600',
+                : '',
             className
           )}
           {...props}

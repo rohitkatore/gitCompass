@@ -17,7 +17,7 @@ import {
   Zap,
   ChevronDown,
 } from 'lucide-react';
-import { Card, Button, Spinner } from '../components/ui';
+import { Card, Button, Container, Spinner } from '../components/ui';
 import { aiAPI } from '../api/axios';
 
 const TABS = [
@@ -107,9 +107,14 @@ const AIBotPage = () => {
     setError('');
   };
 
+  // Elevated field styles — inputs inside Card (bg-zinc-900) need darker bg
+  const fieldClass = "w-full h-9 bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder:text-zinc-600";
+  const monoFieldClass = "w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 resize-y transition-colors placeholder:text-zinc-600";
+  const selectFieldClass = "w-full h-9 appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors";
+
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="w-full py-12 pb-16">
+      <Container size="md">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -122,7 +127,7 @@ const AIBotPage = () => {
             </div>
             <h1 className="text-2xl font-bold text-zinc-100">AI Code Assistant</h1>
           </div>
-          <p className="text-zinc-500 ml-13">
+          <p className="text-zinc-500 pl-13">
             Explain code, review for issues, or generate PR descriptions — powered by AI.
           </p>
         </motion.div>
@@ -159,7 +164,7 @@ const AIBotPage = () => {
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="w-full appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className={selectFieldClass}
                   >
                     {LANGUAGES.map((l) => (
                       <option key={l} value={l}>{l}</option>
@@ -179,7 +184,7 @@ const AIBotPage = () => {
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="Paste your code here..."
                   rows={12}
-                  className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-y placeholder:text-zinc-600"
+                  className={monoFieldClass}
                   maxLength={10000}
                 />
                 <p className="text-xs text-zinc-600 mt-1">{code.length} / 10,000 characters</p>
@@ -197,7 +202,7 @@ const AIBotPage = () => {
                   onChange={(e) => setDiff(e.target.value)}
                   placeholder={"Paste a git diff, e.g. output of `git diff` or code changes..."}
                   rows={12}
-                  className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-y placeholder:text-zinc-600"
+                  className={monoFieldClass}
                   maxLength={50000}
                 />
                 <p className="text-xs text-zinc-600 mt-1">{diff.length} / 50,000 characters</p>
@@ -211,7 +216,7 @@ const AIBotPage = () => {
                   value={prContext}
                   onChange={(e) => setPrContext(e.target.value)}
                   placeholder="e.g. This fixes the login bug on mobile..."
-                  className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-zinc-600"
+                  className={fieldClass}
                 />
               </div>
             </>
@@ -230,7 +235,7 @@ const AIBotPage = () => {
                     value={cpOwner}
                     onChange={(e) => setCpOwner(e.target.value)}
                     placeholder="e.g. octocat"
-                    className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-zinc-600"
+                    className={fieldClass}
                   />
                 </div>
                 <div>
@@ -240,7 +245,7 @@ const AIBotPage = () => {
                     value={cpRepo}
                     onChange={(e) => setCpRepo(e.target.value)}
                     placeholder="e.g. my-project"
-                    className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-zinc-600"
+                    className={fieldClass}
                   />
                 </div>
               </div>
@@ -253,7 +258,7 @@ const AIBotPage = () => {
                     value={cpHead}
                     onChange={(e) => setCpHead(e.target.value)}
                     placeholder="e.g. feature/my-thing"
-                    className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-zinc-600"
+                    className={fieldClass}
                   />
                 </div>
                 <div>
@@ -263,7 +268,7 @@ const AIBotPage = () => {
                     value={cpBase}
                     onChange={(e) => setCpBase(e.target.value)}
                     placeholder="main"
-                    className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-zinc-600"
+                    className={fieldClass}
                   />
                 </div>
               </div>
@@ -277,7 +282,7 @@ const AIBotPage = () => {
                   onChange={(e) => setCpDiff(e.target.value)}
                   placeholder="Paste a git diff here, or leave blank to auto-fetch from GitHub..."
                   rows={6}
-                  className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-y placeholder:text-zinc-600"
+                  className={monoFieldClass}
                   maxLength={50000}
                 />
                 <p className="text-xs text-zinc-600 mt-1">{cpDiff.length} / 50,000 characters</p>
@@ -292,7 +297,7 @@ const AIBotPage = () => {
                   value={cpContext}
                   onChange={(e) => setCpContext(e.target.value)}
                   placeholder="e.g. Fixes the auth regression from PR #120..."
-                  className="w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-zinc-600"
+                  className={fieldClass}
                 />
               </div>
             </>
@@ -350,7 +355,7 @@ const AIBotPage = () => {
             {activeTab === 'create-pr' && <CreatePRResult data={result} onCopy={handleCopy} copiedKey={copiedKey} />}
           </motion.div>
         )}
-      </div>
+      </Container>
     </div>
   );
 };

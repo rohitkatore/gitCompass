@@ -8,7 +8,7 @@ const router = express.Router();
 // @desc    Initiate GitHub OAuth
 // @access  Public
 router.get('/github', passport.authenticate('github', {
-  scope: ['user:email', 'read:user'],
+  scope: ['user:email', 'read:user', 'repo'],
 }));
 
 // @route   GET /api/auth/github/callback

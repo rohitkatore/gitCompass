@@ -9,6 +9,7 @@ import RepositoryPage from './pages/RepositoryPage';
 import SkillsPage from './pages/SkillsPage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
+import AIBotPage from './pages/AIBotPage';
 import { PageLoader } from './components/ui/Loading';
 import { authAPI } from './api/axios';
 import './index.css';
@@ -55,6 +56,7 @@ function App() {
             <Route path="search" element={<SearchPage user={user} />} />
             <Route path="dashboard" element={<DashboardPage user={user} />} />
             <Route path="skills" element={<SkillsPage user={user} />} />
+            <Route path="ai" element={<AIBotPage user={user} />} />
             <Route path="repository/:owner/:repo" element={<RepositoryPage user={user} />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="*" element={<NotFoundPage />} />

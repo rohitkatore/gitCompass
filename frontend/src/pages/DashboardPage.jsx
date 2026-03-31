@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
+import Container from '../components/ui/Container';
 import { Spinner, CardSkeleton } from '../components/ui/Loading';
 import { formatNumber, getLanguageColor, getDifficultyColor } from '../lib/utils';
 import api, { repositoryService } from '../api/axios';
@@ -31,7 +32,7 @@ import api, { repositoryService } from '../api/axios';
 const DashboardPage = ({ user }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const [skills, setSkills] = useState([]);
   const [loadingSkills, setLoadingSkills] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
@@ -48,7 +49,7 @@ const DashboardPage = ({ user }) => {
   useEffect(() => {
     const fetchSkills = async () => {
       if (!user) return;
-      
+
       setLoadingSkills(true);
       try {
         const response = await api.get('/skills');
@@ -78,15 +79,15 @@ const DashboardPage = ({ user }) => {
   useEffect(() => {
     const fetchContributions = async () => {
       if (!user) return;
-      
+
       setLoadingContributions(true);
       try {
         const response = await fetch('/api/auth/contributions', {
           credentials: 'include',
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
           setContributionData(data.data.weeks.map(week => week.days));
           setContributionStats(data.data.stats);
@@ -106,12 +107,12 @@ const DashboardPage = ({ user }) => {
       navigate('/skills');
       return;
     }
-    
+
     setLoadingRecommendations(true);
 
     try {
       const response = await repositoryService.getRecommendations();
-      
+
       if (response.success) {
         const repos = response.data || [];
         setRecommendations(repos);
@@ -152,7 +153,7 @@ const DashboardPage = ({ user }) => {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-56px)]">
+      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
         <div className="max-w-sm mx-auto px-4 text-center">
           <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center mx-auto mb-6">
             <User className="w-6 h-6 text-zinc-500" />
@@ -178,23 +179,23 @@ const DashboardPage = ({ user }) => {
 
   return (
     <div className="w-full py-12">
-      <div className="max-w-7xl mx-auto px-16 sm:px-20 lg:px-32">
+      <Container size="xl">
         {/* Header */}
-        <div className="mb-14">
+        <div className="mb-10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-3">
               {user?.avatar && (
-                <img 
-                  src={user.avatar} 
+                <img
+                  src={user.avatar}
                   alt={user.displayName || user.username}
                   className="w-10 h-10 rounded-full ring-1 ring-zinc-700"
                 />
               )}
               <div>
-                <h1 className="text-lg font-semibold text-zinc-100">
+                <h1 className="text-xl font-semibold text-zinc-100">
                   {user?.displayName || user?.username || 'Developer'}
                 </h1>
-                <p className="text-zinc-500 flex flex-wrap items-center gap-2 text-xs">
+                <p className="text-zinc-500 flex flex-wrap items-center gap-2 text-sm">
                   @{user?.username}
                   {user?.location && (
                     <span className="flex items-center gap-1">
@@ -209,7 +210,7 @@ const DashboardPage = ({ user }) => {
                 </p>
               </div>
             </div>
-            <a 
+            <a
               href={user?.profileUrl || `https://github.com/${user?.username}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -222,7 +223,7 @@ const DashboardPage = ({ user }) => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {userStats.map((stat) => (
             <div
               key={stat.label}
@@ -239,7 +240,7 @@ const DashboardPage = ({ user }) => {
 
         {/* Profile Completion */}
         {profileCompletion < 100 && (
-          <div className="mb-14">
+          <div className="mb-10">
             <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-7">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
@@ -266,9 +267,9 @@ const DashboardPage = ({ user }) => {
         )}
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8">
           {/* Left Column - Skills & Actions */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Skills Section */}
             <Card>
               <Card.Header>
@@ -277,7 +278,7 @@ const DashboardPage = ({ user }) => {
                     <Sparkles className="w-4 h-4 text-violet-400" />
                     Skills
                   </Card.Title>
-                  <Link 
+                  <Link
                     to="/skills"
                     className="text-xs text-zinc-500 hover:text-zinc-300 flex items-center gap-1 transition-colors"
                   >
@@ -285,7 +286,7 @@ const DashboardPage = ({ user }) => {
                   </Link>
                 </div>
                 <Card.Description>
-                  {skills.length > 0 
+                  {skills.length > 0
                     ? `${skills.length} skills in your profile`
                     : 'Add skills to get recommendations'}
                 </Card.Description>
@@ -318,7 +319,7 @@ const DashboardPage = ({ user }) => {
                       </div>
                     ))}
                     {skills.length > 6 && (
-                      <Link 
+                      <Link
                         to="/skills"
                         className="block text-center text-xs text-zinc-500 hover:text-zinc-300 py-2 transition-colors"
                       >
@@ -354,6 +355,7 @@ const DashboardPage = ({ user }) => {
                 icon={Target}
                 variant="secondary"
                 size="md"
+                className="w-full"
               >
                 {recommendations.length > 0 ? 'Refresh Recommendations' : 'Get Recommendations'}
               </Button>
@@ -414,7 +416,7 @@ const DashboardPage = ({ user }) => {
                 <div>
                   <p className="text-xs text-zinc-500">Member since</p>
                   <p className="text-zinc-200 text-sm font-medium">
-                    {user?.createdAt 
+                    {user?.createdAt
                       ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
                       : 'Recently joined'
                     }
@@ -425,7 +427,7 @@ const DashboardPage = ({ user }) => {
           </div>
 
           {/* Right Column - Contributions & Recommendations */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Contribution Graph */}
             <Card>
               <Card.Header>
@@ -462,9 +464,9 @@ const DashboardPage = ({ user }) => {
                   </div>
                 ) : contributionData.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <div className="inline-flex gap-0.75">
+                    <div className="inline-flex gap-1">
                       {contributionData.map((week, weekIndex) => (
-                        <div key={weekIndex} className="flex flex-col gap-0.75">
+                        <div key={weekIndex} className="flex flex-col gap-1">
                           {week.map((day, dayIndex) => {
                             const colors = [
                               'bg-zinc-800/60',
@@ -486,7 +488,7 @@ const DashboardPage = ({ user }) => {
                     </div>
                     <div className="flex items-center gap-1.5 mt-3 text-[10px] text-zinc-500">
                       <span>Less</span>
-                      <div className="flex gap-0.75">
+                      <div className="flex gap-1">
                         <div className="w-2.5 h-2.5 rounded-sm bg-zinc-800/60" />
                         <div className="w-2.5 h-2.5 rounded-sm bg-emerald-900/50" />
                         <div className="w-2.5 h-2.5 rounded-sm bg-emerald-700/60" />
@@ -516,7 +518,7 @@ const DashboardPage = ({ user }) => {
                     <p className="text-xs text-zinc-500 mt-1">
                       {recommendations.length > 0
                         ? `${recommendations.length} projects match your skills`
-                        : skills.length > 0 
+                        : skills.length > 0
                           ? 'Click "Get Recommendations" to find projects'
                           : 'Add skills to get personalized recommendations'}
                     </p>
@@ -546,7 +548,7 @@ const DashboardPage = ({ user }) => {
                   <div className="space-y-6">
                     {recommendations.map((repo) => {
                       if (!repo || !repo.owner) return null;
-                      
+
                       return (
                         <div
                           key={repo.id}
@@ -576,7 +578,7 @@ const DashboardPage = ({ user }) => {
                               <div className="flex flex-wrap items-center gap-2.5 text-xs">
                                 {repo.language && (
                                   <span className="flex items-center gap-1">
-                                    <span 
+                                    <span
                                       className="w-2.5 h-2.5 rounded-full"
                                       style={{ backgroundColor: getLanguageColor(repo.language) }}
                                     />
@@ -618,7 +620,7 @@ const DashboardPage = ({ user }) => {
                       {skills.length > 0 ? 'Ready for recommendations' : 'No skills added yet'}
                     </h3>
                     <p className="text-zinc-500 text-xs max-w-xs mx-auto mb-4">
-                      {skills.length > 0 
+                      {skills.length > 0
                         ? 'Click the button on the left to get AI-powered project recommendations.'
                         : 'Add your skills to get personalized recommendations.'}
                     </p>
@@ -639,7 +641,7 @@ const DashboardPage = ({ user }) => {
             </Card>
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 };

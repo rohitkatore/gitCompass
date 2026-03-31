@@ -3,6 +3,7 @@ import { Search as SearchIcon, Filter, Star, GitFork, Clock, Code, X } from 'luc
 import { Link } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
+import Container from '../components/ui/Container';
 import { CardSkeleton } from '../components/ui/Loading';
 import { formatNumber, formatRelativeTime, getLanguageColor } from '../lib/utils';
 
@@ -67,43 +68,42 @@ const SearchPage = ({ user }) => {
     setFilters({ language: '', minStars: '', topic: '', sortBy: 'relevance' });
   };
 
-  const selectClass = "w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500";
-  const inputClass = "w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500";
+  const fieldClass = "w-full h-9 bg-zinc-800 border border-zinc-700 rounded-lg px-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors";
 
   return (
     <div className="w-full py-12">
-      <div className="max-w-5xl mx-auto px-16 sm:px-20 lg:px-32">
+      <Container size="lg">
         {/* Header */}
-        <div className="mb-16 text-center">
-          <h1 className="text-2xl font-bold text-zinc-100 mb-2">Explore Repositories</h1>
-          <p className="text-sm text-zinc-500 max-w-md mx-auto leading-relaxed">
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl font-bold text-zinc-100 mb-3">Explore Repositories</h1>
+          <p className="text-base text-zinc-500 max-w-xl mx-auto leading-relaxed">
             Search through millions of open-source projects and find the perfect match for your skills.
           </p>
         </div>
 
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="flex items-center gap-3 mb-8">
+        {/* Search Bar — input and buttons share h-10 */}
+        <form onSubmit={handleSearch} className="flex items-center gap-3 mb-6">
           <div className="flex-1 relative">
-            <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, description, or technology..."
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              className="w-full h-10 bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             />
           </div>
           <div className="flex gap-2 shrink-0">
             <Button
               type="button"
               variant="secondary"
-              size="sm"
+              size="md"
               icon={Filter}
               onClick={() => setShowFilters(!showFilters)}
             >
               Filters
             </Button>
-            <Button type="submit" size="sm" loading={loading}>
+            <Button type="submit" size="md" loading={loading}>
               Search
             </Button>
           </div>
@@ -111,8 +111,8 @@ const SearchPage = ({ user }) => {
 
         {/* Filters Panel */}
         {showFilters && (
-          <div className="mb-12 bg-zinc-900 border border-zinc-800 rounded-xl p-7">
-            <div className="flex justify-between items-center mb-3">
+          <div className="mb-10 bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+            <div className="flex justify-between items-center mb-4">
               <h3 className="text-sm font-semibold text-zinc-200">Filters</h3>
               <button
                 onClick={clearFilters}
@@ -122,10 +122,10 @@ const SearchPage = ({ user }) => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label className="block text-[10px] uppercase tracking-wider text-zinc-500 font-medium mb-1.5">Language</label>
-                <select value={filters.language} onChange={(e) => setFilters({ ...filters, language: e.target.value })} className={selectClass}>
+                <select value={filters.language} onChange={(e) => setFilters({ ...filters, language: e.target.value })} className={fieldClass}>
                   <option value="">All Languages</option>
                   {languages.map((lang) => (
                     <option key={lang} value={lang}>{lang}</option>
@@ -134,15 +134,15 @@ const SearchPage = ({ user }) => {
               </div>
               <div>
                 <label className="block text-[10px] uppercase tracking-wider text-zinc-500 font-medium mb-1.5">Min Stars</label>
-                <input type="number" value={filters.minStars} onChange={(e) => setFilters({ ...filters, minStars: e.target.value })} placeholder="e.g., 1000" className={inputClass} />
+                <input type="number" value={filters.minStars} onChange={(e) => setFilters({ ...filters, minStars: e.target.value })} placeholder="e.g., 1000" className={fieldClass} />
               </div>
               <div>
                 <label className="block text-[10px] uppercase tracking-wider text-zinc-500 font-medium mb-1.5">Topic</label>
-                <input type="text" value={filters.topic} onChange={(e) => setFilters({ ...filters, topic: e.target.value })} placeholder="e.g., machine-learning" className={inputClass} />
+                <input type="text" value={filters.topic} onChange={(e) => setFilters({ ...filters, topic: e.target.value })} placeholder="e.g., machine-learning" className={fieldClass} />
               </div>
               <div>
                 <label className="block text-[10px] uppercase tracking-wider text-zinc-500 font-medium mb-1.5">Sort By</label>
-                <select value={filters.sortBy} onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })} className={selectClass}>
+                <select value={filters.sortBy} onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })} className={fieldClass}>
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
@@ -153,7 +153,7 @@ const SearchPage = ({ user }) => {
         )}
 
         {/* Results */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           {loading ? (
             Array(3).fill(null).map((_, i) => (
               <CardSkeleton key={i} />
@@ -222,7 +222,7 @@ const SearchPage = ({ user }) => {
             </div>
           )}
         </div>
-      </div>
+      </Container>
     </div>
   );
 };

@@ -14,6 +14,7 @@ import {
   Compass
 } from 'lucide-react';
 import Button from '../components/ui/Button';
+import Container from '../components/ui/Container';
 
 const HomePage = ({ user }) => {
   const features = [
@@ -53,113 +54,115 @@ const HomePage = ({ user }) => {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="w-full pt-24 pb-20">
-        <div className="max-w-3xl mx-auto px-16 sm:px-20 lg:px-32 text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-8">
-            <Sparkles className="w-3.5 h-3.5" />
-            AI-Powered Open Source Discovery
-          </div>
+      <section className="w-full pt-16 pb-20">
+        <Container size="md">
+          <div className="flex flex-col items-center text-center">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-6">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI-Powered Open Source Discovery
+            </div>
 
-          {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl font-bold text-zinc-100 leading-tight mb-5">
-            Find Your Perfect{' '}
-            <span className="text-indigo-400">Open Source Match</span>
-          </h1>
+            {/* Heading */}
+            <h1 className="text-5xl sm:text-6xl font-bold text-zinc-100 leading-tight mb-4">
+              Find Your Perfect{' '}
+              <span className="text-indigo-400">Open Source Match</span>
+            </h1>
 
-          {/* Subheading */}
-          <p className="text-base text-zinc-400 max-w-xl mx-auto mb-10 leading-relaxed">
-            Upload your resume and let AI discover open-source projects that align with your skills.
-            Get personalized contribution guides to make your first PR effortlessly.
-          </p>
+            {/* Subheading */}
+            <p className="text-lg text-zinc-400 max-w-2xl mb-8 leading-relaxed">
+              Upload your resume and let AI discover open-source projects that align with your skills.
+              Get personalized contribution guides to make your first PR effortlessly.
+            </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {user ? (
-              <Link to="/dashboard">
-                <Button size="md" icon={Compass}>
-                  Go to Dashboard
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              {user ? (
+                <Link to="/dashboard">
+                  <Button size="md" icon={Compass}>
+                    Go to Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  size="md"
+                  icon={Github}
+                  onClick={() => window.location.href = '/api/auth/github'}
+                >
+                  Get Started with GitHub
+                </Button>
+              )}
+              <Link to="/search">
+                <Button variant="secondary" size="md" icon={Search}>
+                  Explore Repositories
                 </Button>
               </Link>
-            ) : (
-              <Button
-                size="md"
-                icon={Github}
-                onClick={() => window.location.href = '/api/auth/github'}
-              >
-                Get Started with GitHub
-              </Button>
-            )}
-            <Link to="/search">
-              <Button variant="secondary" size="md" icon={Search}>
-                Explore Repositories
-              </Button>
-            </Link>
+            </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Stats Section */}
       <section className="w-full py-16 border-t border-b border-zinc-800/60 bg-zinc-900/30">
-        <div className="max-w-5xl mx-auto px-16 sm:px-20 lg:px-32">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+        <Container size="lg">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <div key={index} className="text-center">
-                  <div className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-zinc-800 text-indigo-400 mb-2">
+                <div key={index} className="flex flex-col items-center text-center">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-800 text-indigo-400 mb-3">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="text-2xl font-bold text-zinc-100">{stat.value}</div>
-                  <div className="text-xs text-zinc-500">{stat.label}</div>
+                  <div className="text-xs text-zinc-500 mt-1">{stat.label}</div>
                 </div>
               );
             })}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* How It Works */}
       <section className="w-full py-24">
-        <div className="max-w-6xl mx-auto px-16 sm:px-20 lg:px-32">
-          <div className="text-center mb-20">
+        <Container size="lg">
+          <div className="text-center mb-12">
             <h2 className="text-2xl font-bold text-zinc-100 mb-3">How It Works</h2>
             <p className="text-sm text-zinc-500 max-w-lg mx-auto">
               Our AI-powered platform simplifies your journey into open source in four simple steps.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <div
                   key={feature.step}
-                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-7 hover:border-zinc-700 transition-colors"
+                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 hover:border-zinc-700 transition-colors text-center flex flex-col items-center"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center mb-4">
-                    <Icon className="w-4.5 h-4.5 text-indigo-400" strokeWidth={2} />
+                  <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center mb-4">
+                    <Icon className="w-4 h-4 text-indigo-400" strokeWidth={2} />
                   </div>
-                  <div className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold mb-1.5">
+                  <div className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold mb-2">
                     Step {feature.step}
                   </div>
-                  <h3 className="text-sm font-semibold text-zinc-200 mb-1.5">{feature.title}</h3>
+                  <h3 className="text-sm font-semibold text-zinc-200 mb-2">{feature.title}</h3>
                   <p className="text-xs text-zinc-500 leading-relaxed">{feature.description}</p>
                 </div>
               );
             })}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* CTA Section */}
       <section className="w-full pb-24">
-        <div className="max-w-5xl mx-auto px-16 sm:px-20 lg:px-32">
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 px-8 py-16 text-center">
-            <h2 className="text-2xl font-bold text-zinc-100 mb-3">
+        <Container size="lg">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 px-8 py-16 flex flex-col items-center text-center">
+            <h2 className="text-2xl font-bold text-zinc-100 mb-4">
               Ready to Start Contributing?
             </h2>
-            <p className="text-sm text-zinc-400 max-w-lg mx-auto mb-8 leading-relaxed">
+            <p className="text-sm text-zinc-400 max-w-lg mb-8 leading-relaxed">
               Join thousands of developers who found their perfect open-source projects.
               Your first contribution is just a click away.
             </p>
@@ -172,7 +175,7 @@ const HomePage = ({ user }) => {
               {user ? 'Go to Dashboard' : 'Start Your Journey'}
             </Button>
           </div>
-        </div>
+        </Container>
       </section>
     </div>
   );

@@ -186,7 +186,7 @@ const SkillsPage = () => {
   const hasSkills = skills.length > 0;
 
   return (
-    <div className="w-full py-12">
+    <div className="w-full pt-12 pb-24">
       <Container size="lg">
         {/* Header */}
         <div className="mb-10 text-center">

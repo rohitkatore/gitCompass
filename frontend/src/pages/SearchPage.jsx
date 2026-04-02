@@ -76,7 +76,7 @@ const SearchPage = ({ user }) => {
         {/* Header */}
         <div className="mb-10 text-center">
           <h1 className="text-3xl font-bold text-zinc-100 mb-3">Explore Repositories</h1>
-          <p className="text-base text-zinc-500 max-w-xl mx-auto leading-relaxed">
+          <p className="text-base text-zinc-500 max-w-xl mx-auto leading-relaxed text-center">
             Search through millions of open-source projects and find the perfect match for your skills.
           </p>
         </div>

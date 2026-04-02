@@ -267,7 +267,7 @@ const DashboardPage = ({ user }) => {
         )}
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Skills & Actions */}
           <div className="space-y-6">
             {/* Skills Section */}

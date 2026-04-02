@@ -17,9 +17,9 @@ const Footer = () => {
 
           {/* Links */}
           <div className="flex items-center gap-6 text-xs text-zinc-500">
-            <a href="#" className="hover:text-zinc-300 transition-colors">Docs</a>
-            <a href="#" className="hover:text-zinc-300 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-zinc-300 transition-colors">Terms</a>
+            <span className="text-zinc-600">Docs</span>
+            <span className="text-zinc-600">Privacy</span>
+            <span className="text-zinc-600">Terms</span>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-300 transition-colors">
               <Github className="w-4 h-4" />
             </a>
@@ -27,7 +27,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-xs text-zinc-600">
-            &copy; {currentYear} GitCompass
+            {currentYear} GitCompass. All rights reserved.
           </p>
         </div>
       </div>

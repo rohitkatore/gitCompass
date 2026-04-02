@@ -28,8 +28,8 @@ const Navbar = ({ user, onLogout }) => {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-200',
         isScrolled
-          ? 'bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800'
-          : 'bg-zinc-950/60 backdrop-blur-md border-b border-transparent'
+          ? 'bg-zinc-950/95 backdrop-blur-xl border-b border-zinc-800'
+          : 'bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/60'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">

@@ -54,7 +54,7 @@ const HomePage = ({ user }) => {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="w-full pt-16 pb-20">
+      <section className="w-full pt-16 pb-12">
         <Container size="md">
           <div className="flex flex-col items-center text-center">
             {/* Badge */}
@@ -64,7 +64,7 @@ const HomePage = ({ user }) => {
             </div>
 
             {/* Heading */}
-            <h1 className="text-5xl sm:text-6xl font-bold text-zinc-100 leading-tight mb-4">
+            <h1 className="text-5xl sm:text-6xl font-bold text-zinc-100 leading-tight mb-4 max-w-2xl text-balance">
               Find Your Perfect{' '}
               <span className="text-indigo-400">Open Source Match</span>
             </h1>
@@ -114,7 +114,7 @@ const HomePage = ({ user }) => {
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="text-2xl font-bold text-zinc-100">{stat.value}</div>
-                  <div className="text-xs text-zinc-500 mt-1">{stat.label}</div>
+                  <div className="text-xs text-zinc-400 mt-1">{stat.label}</div>
                 </div>
               );
             })}
@@ -127,7 +127,7 @@ const HomePage = ({ user }) => {
         <Container size="lg">
           <div className="text-center mb-12">
             <h2 className="text-2xl font-bold text-zinc-100 mb-3">How It Works</h2>
-            <p className="text-sm text-zinc-500 max-w-lg mx-auto">
+            <p className="text-sm text-zinc-500 max-w-md mx-auto">
               Our AI-powered platform simplifies your journey into open source in four simple steps.
             </p>
           </div>
@@ -143,7 +143,7 @@ const HomePage = ({ user }) => {
                   <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center mb-4">
                     <Icon className="w-4 h-4 text-indigo-400" strokeWidth={2} />
                   </div>
-                  <div className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold mb-2">
+                  <div className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold mb-2 whitespace-nowrap">
                     Step {feature.step}
                   </div>
                   <h3 className="text-sm font-semibold text-zinc-200 mb-2">{feature.title}</h3>

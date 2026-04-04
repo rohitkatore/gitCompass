@@ -14,33 +14,60 @@ import { PageLoader } from './components/ui/Loading';
 import { authAPI } from './api/axios';
 import './index.css';
 
+function decodeJWT(token) {
+  try {
+    const payload = token.split('.')[1];
+    return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+  } catch {
+    return null;
+  }
+}
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If coming back from OAuth, extract token from URL and store it
+    // Read token from URL (post-OAuth redirect) or from localStorage
     const params = new URLSearchParams(window.location.search);
     const authToken = params.get('auth_token');
     if (authToken) {
       localStorage.setItem('token', authToken);
-      // Clean token from URL without page reload
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // Check if user is authenticated
-    const checkAuth = async () => {
+    const storedToken = localStorage.getItem('token');
+
+    if (!storedToken) {
+      setLoading(false);
+      return;
+    }
+
+    // Immediately decode JWT payload and set user — no backend call needed
+    const payload = decodeJWT(storedToken);
+    if (payload && payload.exp * 1000 < Date.now()) {
+      // Token expired
+      localStorage.removeItem('token');
+      setLoading(false);
+      return;
+    }
+    if (payload && payload.username) {
+      setUser({ id: payload.id, username: payload.username });
+    }
+
+    // Fetch full profile in background to get avatar, bio etc.
+    const fetchFullProfile = async () => {
       try {
         const userData = await authAPI.getUser();
         setUser(userData);
-      } catch (error) {
-        setUser(null);
+      } catch {
+        // Backend unavailable — keep user logged in from JWT payload
       } finally {
         setLoading(false);
       }
     };
 
-    checkAuth();
+    fetchFullProfile();
   }, []);
 
   const handleLogout = async () => {

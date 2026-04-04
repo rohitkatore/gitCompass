@@ -2,6 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import User from '../models/User.model.js';
 
 const router = express.Router();
 
@@ -38,39 +39,34 @@ router.get('/github/callback',
 // @route   GET /api/auth/user
 // @desc    Get current authenticated user (supports both JWT Bearer and session)
 // @access  Private
-router.get('/user', (req, res) => {
+router.get('/user', async (req, res) => {
   // Check Bearer token first
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.slice(7);
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
-      // Import User model dynamically to avoid circular deps
-      import('../models/User.model.js').then(({ default: User }) => {
-        User.findById(decoded.id).then(user => {
-          if (!user) return res.status(401).json({ success: false, message: 'User not found' });
-          res.json({
-            id: user._id,
-            username: user.username,
-            displayName: user.displayName,
-            email: user.email,
-            avatar: user.avatar,
-            bio: user.bio,
-            company: user.company,
-            location: user.location,
-            profileUrl: user.profileUrl,
-            publicRepos: user.publicRepos || 0,
-            followers: user.followers || 0,
-            following: user.following || 0,
-            skills: user.skills || [],
-            savedRepositories: user.savedRepositories || [],
-            hasResume: !!user.resume?.uploadedAt,
-            createdAt: user.createdAt,
-            lastLogin: user.lastLogin,
-          });
-        }).catch(() => res.status(500).json({ success: false, message: 'DB error' }));
+      const user = await User.findById(decoded.id);
+      if (!user) return res.status(401).json({ success: false, message: 'User not found' });
+      return res.json({
+        id: user._id,
+        username: user.username,
+        displayName: user.displayName,
+        email: user.email,
+        avatar: user.avatar,
+        bio: user.bio,
+        company: user.company,
+        location: user.location,
+        profileUrl: user.profileUrl,
+        publicRepos: user.publicRepos || 0,
+        followers: user.followers || 0,
+        following: user.following || 0,
+        skills: user.skills || [],
+        savedRepositories: user.savedRepositories || [],
+        hasResume: !!user.resume?.uploadedAt,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin,
       });
-      return;
     } catch {
       return res.status(401).json({ success: false, message: 'Invalid token' });
     }

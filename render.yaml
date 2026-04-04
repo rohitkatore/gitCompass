@@ -32,7 +32,7 @@ services:
       - key: CLIENT_URL
         value: https://gitcompass.vercel.app
       - key: AI_SERVICE_URL
-        sync: false
+        value: https://gitcompass-ai-engine.onrender.com
 
   # AI Engine (Python/FastAPI)
   - type: web

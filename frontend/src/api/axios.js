@@ -41,9 +41,11 @@ api.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          // Don't redirect automatically - let the app handle auth state
-          // Only clear token if it exists
-          localStorage.removeItem('token');
+          // Only clear token if the /auth/user endpoint returns 401 (token truly invalid)
+          // Do NOT clear on every 401 — that causes cascading logouts
+          if (error.config?.url?.includes('/auth/user')) {
+            localStorage.removeItem('token');
+          }
           break;
         case 403:
           console.error('Access forbidden');

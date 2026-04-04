@@ -3,6 +3,7 @@ import passport from 'passport';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.model.js';
+import { isAuthenticated } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -110,35 +111,25 @@ router.get('/check', (req, res) => {
 });
 
 // @route   POST /api/auth/logout
-// @desc    Logout user
-// @access  Private
+// @desc    Logout user (JWT is stateless — client clears the token)
+// @access  Public
 router.post('/logout', (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: 'Logout failed',
-      });
-    }
-    
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Session destruction error:', err);
-      }
-      res.clearCookie('connect.sid');
-      res.json({
-        success: true,
-        message: 'Logged out successfully',
-      });
-    });
+  // Clear session if one exists (for legacy session-based auth)
+  if (req.session) {
+    req.session.destroy(() => {});
+  }
+  res.clearCookie('connect.sid');
+  res.json({
+    success: true,
+    message: 'Logged out successfully',
   });
 });
 
 // @route   GET /api/auth/contributions
 // @desc    Get GitHub contribution data for the authenticated user
 // @access  Private
-router.get('/contributions', async (req, res) => {
-  if (!req.isAuthenticated() || !req.user) {
+router.get('/contributions', isAuthenticated, async (req, res) => {
+  if (!req.user) {
     return res.status(401).json({
       success: false,
       message: 'Not authenticated',

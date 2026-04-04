@@ -1,8 +1,16 @@
 import express from 'express';
 import passport from 'passport';
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
+
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'gitcompass-jwt-secret';
+const JWT_EXPIRY = '7d';
+
+function generateToken(user) {
+  return jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+}
 
 // @route   GET /api/auth/github
 // @desc    Initiate GitHub OAuth
@@ -17,19 +25,59 @@ router.get('/github', passport.authenticate('github', {
 router.get('/github/callback',
   passport.authenticate('github', {
     failureRedirect: `${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=auth_failed`,
+    session: true,
   }),
   (req, res) => {
-    // Successful authentication
-    res.redirect(process.env.CLIENT_URL || 'http://localhost:5173');
+    // Generate JWT and pass to frontend via URL — no cross-domain cookie needed
+    const token = generateToken(req.user);
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    res.redirect(`${clientUrl}?auth_token=${token}`);
   }
 );
 
 // @route   GET /api/auth/user
-// @desc    Get current authenticated user
+// @desc    Get current authenticated user (supports both JWT Bearer and session)
 // @access  Private
 router.get('/user', (req, res) => {
+  // Check Bearer token first
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.slice(7);
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      // Import User model dynamically to avoid circular deps
+      import('../models/User.model.js').then(({ default: User }) => {
+        User.findById(decoded.id).then(user => {
+          if (!user) return res.status(401).json({ success: false, message: 'User not found' });
+          res.json({
+            id: user._id,
+            username: user.username,
+            displayName: user.displayName,
+            email: user.email,
+            avatar: user.avatar,
+            bio: user.bio,
+            company: user.company,
+            location: user.location,
+            profileUrl: user.profileUrl,
+            publicRepos: user.publicRepos || 0,
+            followers: user.followers || 0,
+            following: user.following || 0,
+            skills: user.skills || [],
+            savedRepositories: user.savedRepositories || [],
+            hasResume: !!user.resume?.uploadedAt,
+            createdAt: user.createdAt,
+            lastLogin: user.lastLogin,
+          });
+        }).catch(() => res.status(500).json({ success: false, message: 'DB error' }));
+      });
+      return;
+    } catch {
+      return res.status(401).json({ success: false, message: 'Invalid token' });
+    }
+  }
+  // Fallback to session
   if (req.isAuthenticated() && req.user) {
-    res.json({
+    return res.json({
       id: req.user._id,
       username: req.user.username,
       displayName: req.user.displayName,
@@ -48,12 +96,8 @@ router.get('/user', (req, res) => {
       createdAt: req.user.createdAt,
       lastLogin: req.user.lastLogin,
     });
-  } else {
-    res.status(401).json({
-      success: false,
-      message: 'Not authenticated',
-    });
   }
+  res.status(401).json({ success: false, message: 'Not authenticated' });
 });
 
 // @route   GET /api/auth/check

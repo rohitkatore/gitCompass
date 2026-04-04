@@ -19,6 +19,15 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If coming back from OAuth, extract token from URL and store it
+    const params = new URLSearchParams(window.location.search);
+    const authToken = params.get('auth_token');
+    if (authToken) {
+      localStorage.setItem('token', authToken);
+      // Clean token from URL without page reload
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     // Check if user is authenticated
     const checkAuth = async () => {
       try {
@@ -37,9 +46,11 @@ function App() {
   const handleLogout = async () => {
     try {
       await authAPI.logout();
-      setUser(null);
     } catch (error) {
       console.error('Logout failed:', error);
+    } finally {
+      localStorage.removeItem('token');
+      setUser(null);
     }
   };
 

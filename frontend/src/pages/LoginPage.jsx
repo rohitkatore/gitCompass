@@ -1,5 +1,6 @@
 import { Github } from 'lucide-react';
 import Button from '../components/ui/Button';
+import { BACKEND_ORIGIN } from '../api/axios';
 
 const LoginPage = () => {
   return (
@@ -21,7 +22,7 @@ const LoginPage = () => {
             size="md"
             icon={Github}
             className="w-full"
-            onClick={() => window.location.href = '/api/auth/github'}
+            onClick={() => window.location.href = `${BACKEND_ORIGIN}/api/auth/github`}
           >
             Continue with GitHub
           </Button>

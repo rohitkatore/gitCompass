@@ -1,8 +1,14 @@
 import axios from 'axios';
 
+// Base URL for the backend API
+export const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://gitcompass.onrender.com/api' : '/api');
+
+// The full origin of the backend (used for browser navigations like OAuth)
+export const BACKEND_ORIGIN = import.meta.env.PROD ? 'https://gitcompass.onrender.com' : '';
+
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://gitcompass.onrender.com/api' : '/api'),
+  baseURL: API_BASE,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

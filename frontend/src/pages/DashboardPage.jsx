@@ -27,7 +27,7 @@ import Card from '../components/ui/Card';
 import Container from '../components/ui/Container';
 import { Spinner, CardSkeleton } from '../components/ui/Loading';
 import { formatNumber, getLanguageColor, getDifficultyColor } from '../lib/utils';
-import api, { repositoryService } from '../api/axios';
+import api, { repositoryService, BACKEND_ORIGIN } from '../api/axios';
 
 const DashboardPage = ({ user }) => {
   const navigate = useNavigate();
@@ -82,11 +82,7 @@ const DashboardPage = ({ user }) => {
 
       setLoadingContributions(true);
       try {
-        const response = await fetch('/api/auth/contributions', {
-          credentials: 'include',
-        });
-
-        const data = await response.json();
+        const data = await api.get('/auth/contributions');
 
         if (data.success) {
           setContributionData(data.data.weeks.map(week => week.days));
@@ -167,7 +163,7 @@ const DashboardPage = ({ user }) => {
           </p>
           <Button
             as="a"
-            href="/api/auth/github"
+            href={`${BACKEND_ORIGIN}/api/auth/github`}
             size="md"
           >
             Sign in with GitHub

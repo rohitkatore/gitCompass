@@ -41,11 +41,10 @@ api.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          // Only clear token if the /auth/user endpoint returns 401 (token truly invalid)
-          // Do NOT clear on every 401 — that causes cascading logouts
-          if (error.config?.url?.includes('/auth/user')) {
-            localStorage.removeItem('token');
-          }
+          // Do NOT clear token here — token is only cleared by explicit logout or
+          // client-side expiry check in App.jsx. Clearing here causes a race where
+          // Render's cold-start (50+ sec) returns 401 and wipes the token before
+          // the backend is even ready.
           break;
         case 403:
           console.error('Access forbidden');

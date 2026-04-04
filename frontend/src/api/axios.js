@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Base URL for the backend API
-export const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://gitcompass.onrender.com/api' : '/api');
+// Base URL for the backend API — hardcoded, never rely on VITE_API_URL which can be set wrong in Vercel
+export const API_BASE = import.meta.env.PROD ? 'https://gitcompass.onrender.com/api' : '/api';
 
 // The full origin of the backend (used for browser navigations like OAuth)
 export const BACKEND_ORIGIN = import.meta.env.PROD ? 'https://gitcompass.onrender.com' : '';

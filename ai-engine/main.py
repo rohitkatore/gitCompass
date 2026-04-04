@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 from contextlib import asynccontextmanager
+import asyncio
 import uvicorn
 import os
 from dotenv import load_dotenv
@@ -29,17 +30,24 @@ code_analyzer = CodeAnalyzer()
 pr_generator = PRGenerator()
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Preload ML models on startup to avoid delays on first request"""
-    print("Preloading models...")
+async def _preload_models_background():
+    """Load heavy ML models in a background thread to avoid blocking the event loop"""
+    print("Preloading models in background...")
     try:
-        await skill_matcher.initialize()
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, skill_matcher._load_model)
         print("✓ Models preloaded successfully")
     except Exception as e:
         print(f"⚠ Warning: Failed to preload models: {e}")
         print("Models will be loaded on first request")
-    yield  # application runs here
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Start server immediately; load ML models in background after port is bound"""
+    print("Starting AI Engine...")
+    asyncio.ensure_future(_preload_models_background())
+    yield  # server is running and port is bound immediately
 
 
 # Initialize FastAPI app
@@ -51,9 +59,15 @@ app = FastAPI(
 )
 
 # Configure CORS
+ALLOWED_ORIGINS = [
+    "http://localhost:5000",
+    "http://localhost:5173",
+    "https://gitcompass-backend.onrender.com",
+    os.getenv("CLIENT_URL", ""),
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000", "http://localhost:5173"],
+    allow_origins=[o for o in ALLOWED_ORIGINS if o],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Container from '../components/ui/Container';
+import { BACKEND_ORIGIN } from '../api/axios';
 
 const HomePage = ({ user }) => {
   const features = [
@@ -87,7 +88,7 @@ const HomePage = ({ user }) => {
                 <Button
                   size="md"
                   icon={Github}
-                  onClick={() => window.location.href = '/api/auth/github'}
+                  onClick={() => window.location.href = `${BACKEND_ORIGIN}/api/auth/github`}
                 >
                   Get Started with GitHub
                 </Button>
@@ -170,7 +171,7 @@ const HomePage = ({ user }) => {
               size="lg"
               icon={ArrowRight}
               iconPosition="right"
-              onClick={() => window.location.href = user ? '/dashboard' : '/api/auth/github'}
+              onClick={() => window.location.href = user ? '/dashboard' : `${BACKEND_ORIGIN}/api/auth/github`}
             >
               {user ? 'Go to Dashboard' : 'Start Your Journey'}
             </Button>

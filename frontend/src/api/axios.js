@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://gitcompass.onrender.com/api' : '/api'),
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

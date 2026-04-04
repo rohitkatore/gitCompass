@@ -26,7 +26,7 @@ services:
       - key: GITHUB_CLIENT_SECRET
         sync: false
       - key: GITHUB_CALLBACK_URL
-        sync: false
+        value: https://gitcompass.vercel.app/api/auth/github/callback
       - key: CLIENT_URL
         value: https://gitcompass.vercel.app
       - key: AI_SERVICE_URL

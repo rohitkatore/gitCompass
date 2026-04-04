@@ -56,6 +56,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'gitcompass-secret-key',
   resave: false,
   saveUninitialized: false,
+  proxy: true, // trust the reverse proxy (Vercel, Render)
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,

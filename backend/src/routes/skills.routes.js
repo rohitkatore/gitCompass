@@ -189,7 +189,7 @@ router.post('/extract-resume', isAuthenticated, upload.single('resume'), async (
       form,
       {
         headers: form.getHeaders(),
-        timeout: 60000, // 60 second timeout for AI processing
+        timeout: 120000, // 120s — allows for AI engine cold start (30-60s) + processing
       }
     );
 
@@ -235,6 +235,14 @@ router.post('/extract-resume', isAuthenticated, upload.single('resume'), async (
       return res.status(503).json({
         success: false,
         message: 'AI service is not available. Please ensure the Python AI service is running on port 8000.',
+      });
+    }
+
+    // Axios timeout (ECONNABORTED) — AI engine is cold-starting, ask user to retry
+    if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      return res.status(503).json({
+        success: false,
+        message: 'AI service is starting up (cold start). Please wait 30 seconds and try again.',
       });
     }
     

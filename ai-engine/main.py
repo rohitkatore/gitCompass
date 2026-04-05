@@ -44,10 +44,11 @@ async def _preload_models_background():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Start server immediately; load ML models in background after port is bound"""
+    """Start server immediately — do NOT preload models to avoid OOM on 512MB Render free tier.
+    SentenceTransformer + PyTorch (~450MB peak) exceeds the limit and causes crash loops.
+    Models load lazily on first recommendation request."""
     print("Starting AI Engine...")
-    asyncio.ensure_future(_preload_models_background())
-    yield  # server is running and port is bound immediately
+    yield  # server binds port immediately, no model preloading
 
 
 # Initialize FastAPI app

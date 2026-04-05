@@ -84,7 +84,7 @@ export const resumeAPI = {
 
 export const repositoryAPI = {
   search: (params) => api.post('/repositories/search', params),
-  getRecommendations: () => api.get('/repositories/recommendations'),
+  getRecommendations: () => api.get('/repositories/recommendations', { timeout: 150000 }),
   getDetails: (owner, repo) => api.get(`/repositories/${owner}/${repo}`),
   getIssues: (owner, repo, params) => api.get(`/repositories/${owner}/${repo}/issues`, { params }),
 };
@@ -114,7 +114,7 @@ export const resumeService = {
 
 export const repositoryService = {
   search: (params) => api.post('/repositories/search', params),
-  getRecommendations: () => api.get('/repositories/recommendations'),
+  getRecommendations: () => api.get('/repositories/recommendations', { timeout: 150000 }),
   getDetails: (owner, repo) => api.get(`/repositories/${owner}/${repo}`),
 };
 

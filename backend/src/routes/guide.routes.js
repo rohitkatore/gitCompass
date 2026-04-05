@@ -30,7 +30,7 @@ router.post('/generate', optionalAuth, async (req, res) => {
           userSkills: req.user?.skills || userContext?.skills || [],
           userId: req.user?._id,
         },
-        { timeout: 60000 } // 60 second timeout for LLM
+        { timeout: 90000 } // 90 second timeout for LLM (allows for AI engine cold start)
       );
 
       return res.json({

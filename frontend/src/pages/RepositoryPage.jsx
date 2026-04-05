@@ -22,6 +22,7 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import Container from '../components/ui/Container';
 import { Spinner, DotsLoader } from '../components/ui/Loading';
+import RepoAnalytics from '../components/analytics/RepoAnalytics';
 import { formatNumber, formatRelativeTime, getLanguageColor, getDifficultyColor } from '../lib/utils';
 import api from '../api/axios';
 
@@ -503,6 +504,11 @@ const RepositoryPage = ({ user }) => {
               </Card.Content>
             </Card>
           </div>
+        </div>
+
+        {/* Repository Deep-Dive Analytics */}
+        <div className="mt-6">
+          <RepoAnalytics owner={owner} repo={repo} />
         </div>
 
         {/* Issue Detail Modal */}

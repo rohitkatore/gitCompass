@@ -87,6 +87,7 @@ export const repositoryAPI = {
   getRecommendations: () => api.get('/repositories/recommendations', { timeout: 150000 }),
   getDetails: (owner, repo) => api.get(`/repositories/${owner}/${repo}`),
   getIssues: (owner, repo, params) => api.get(`/repositories/${owner}/${repo}/issues`, { params }),
+  getAnalytics: (owner, repo) => api.get(`/repositories/${owner}/${repo}/analytics`, { timeout: 60000 }),
 };
 
 export const guideAPI = {

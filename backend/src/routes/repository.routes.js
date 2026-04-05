@@ -155,10 +155,10 @@ router.get('/recommendations', isAuthenticated, async (req, res) => {
       console.log('AI service error:', aiError.message);
       console.log('Falling back to GitHub search');
       
-      const searchQuery = topSkills.join(' OR ') + ' good-first-issues:>0';
+      const searchQuery = topSkills.join(' OR ') + ' good-first-issues:>0 stars:100..100000';
       
       const response = await githubRequest(
-        `/search/repositories?q=${encodeURIComponent(searchQuery)}&sort=stars&order=desc&per_page=10`,
+        `/search/repositories?q=${encodeURIComponent(searchQuery)}&sort=help-wanted-issues&order=desc&per_page=10`,
         user.accessToken
       );
 
@@ -176,10 +176,10 @@ router.get('/recommendations', isAuthenticated, async (req, res) => {
         language: repo.language,
         topics: repo.topics || [],
         updatedAt: repo.updated_at,
-        matchScore: 95 - index * 5, // Simulated match score
+        matchScore: 85 - index * 5,
         matchReason: `Matches your ${topSkills[0]} skills`,
-        goodFirstIssues: Math.floor(Math.random() * 20) + 5,
-        difficulty: ['Easy', 'Medium', 'Hard'][Math.floor(Math.random() * 3)],
+        goodFirstIssues: repo.open_issues_count,
+        difficulty: repo.stargazers_count > 10000 ? 'Hard' : repo.stargazers_count > 2000 ? 'Medium' : 'Easy',
       }));
 
       return res.json({

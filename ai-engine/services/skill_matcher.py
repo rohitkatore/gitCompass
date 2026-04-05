@@ -122,10 +122,11 @@ class SkillMatcher:
             return []
             
         query = " OR ".join(valid_skills)
-        query += " good-first-issues:>0"
+        # good-first-issues filter + star range (avoid unmaintained AND mega-company repos)
+        query += " good-first-issues:>0 stars:100..100000"
         
-        # Fetch more repos to have enough after filtering out large orgs
-        url = f"https://api.github.com/search/repositories?q={query}&sort=stars&order=desc&per_page=50"
+        # Sort by help-wanted-issues so beginner-friendly repos surface first
+        url = f"https://api.github.com/search/repositories?q={query}&sort=help-wanted-issues&order=desc&per_page=50"
         print(f"DEBUG: GitHub API URL: {url}", flush=True)
         
         try:
@@ -247,9 +248,8 @@ class SkillMatcher:
         repos = await self._fetch_github_repos(skills)
         
         if not repos:
-            # Return mock data if GitHub API fails
-            print("DEBUG: No repos from GitHub API, returning mock recommendations", flush=True)
-            return self._get_mock_recommendations(skills)
+            print("DEBUG: No repos from GitHub API, returning empty list", flush=True)
+            return []
         
         print(f"DEBUG: Processing {len(repos)} repositories", flush=True)
         

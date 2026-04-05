@@ -11,8 +11,14 @@ import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import AIBotPage from './pages/AIBotPage';
 import { PageLoader } from './components/ui/Loading';
-import { authAPI } from './api/axios';
+import { authAPI, API_BASE } from './api/axios';
 import './index.css';
+
+// Silently wake up backend and AI engine on app load (Render free tier cold start)
+function warmupServices() {
+  fetch(`${API_BASE}/health`).catch(() => {});
+  fetch(`${API_BASE}/ai/health`).catch(() => {});
+}
 
 function decodeJWT(token) {
   try {
@@ -28,6 +34,8 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    warmupServices(); // fire-and-forget: wake both Render services immediately
+
     // Read token from URL (post-OAuth redirect) or from localStorage
     const params = new URLSearchParams(window.location.search);
     const authToken = params.get('auth_token');

@@ -1,4 +1,5 @@
 import express from 'express';
+import axios from 'axios';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { optionalAuth, isAuthenticated } from '../middleware/auth.middleware.js';
 import { explainCode, reviewCode, generatePR, createPullRequest } from '../services/ai.service.js';
@@ -278,6 +279,20 @@ router.post('/create-pr', isAuthenticated, createPrLimiter, async (req, res) => 
       message,
       ...(err.code && { errorCode: err.code }),
     });
+  }
+});
+
+// ─────────────────────────────────────────────
+// GET /api/ai/health
+// Proxy health check to the AI engine — used by frontend to wake up the service
+// ─────────────────────────────────────────────
+router.get('/health', async (req, res) => {
+  try {
+    const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+    const response = await axios.get(`${AI_SERVICE_URL}/health`, { timeout: 10000 });
+    res.json({ success: true, aiEngine: response.data });
+  } catch {
+    res.status(503).json({ success: false, message: 'AI engine unavailable' });
   }
 });
 

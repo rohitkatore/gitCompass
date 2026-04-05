@@ -7,6 +7,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://gitcompass.onrender.com/api/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }

@@ -51,8 +51,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Handle preflight for all routes
-app.options('*', cors({
+// Handle preflight for all routes — use regex, bare '*' is invalid in Express 5 / path-to-regexp v8
+app.options(/.*/, cors({
   origin: [
     process.env.CLIENT_URL || 'http://localhost:5173',
     'http://localhost:5173',

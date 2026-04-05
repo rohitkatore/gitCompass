@@ -32,7 +32,7 @@ const LANGUAGES = [
   'Go', 'Rust', 'Ruby', 'PHP', 'Swift', 'Kotlin', 'HTML', 'CSS', 'SQL', 'Shell',
 ];
 
-const AIBotPage = () => {
+const AIBotPage = ({ user }) => {
   const [activeTab, setActiveTab] = useState('explain');
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('Auto-detect');
@@ -111,6 +111,27 @@ const AIBotPage = () => {
   const fieldClass = "w-full h-9 bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder:text-zinc-600";
   const monoFieldClass = "w-full bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 resize-y transition-colors placeholder:text-zinc-600";
   const selectFieldClass = "w-full h-9 appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg px-3 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors";
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
+        <div className="max-w-sm mx-auto px-4 text-center">
+          <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center mx-auto mb-6">
+            <Bot className="w-6 h-6 text-zinc-500" />
+          </div>
+          <h1 className="text-xl font-semibold text-zinc-100 mb-2">
+            Sign in to use the AI Bot
+          </h1>
+          <p className="text-sm text-zinc-500 mb-6">
+            Sign in with GitHub to access AI-powered code explanation, review, and PR generation tools.
+          </p>
+          <Button as="a" href="/api/auth/github" size="md">
+            Sign in with GitHub
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full py-12 pb-16">

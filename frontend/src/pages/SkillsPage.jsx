@@ -20,7 +20,7 @@ import {
 import { Card, Button, Input, Container, Spinner } from '../components/ui';
 import api from '../api/axios';
 
-const SkillsPage = () => {
+const SkillsPage = ({ user }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [skills, setSkills] = useState([]);
@@ -174,6 +174,27 @@ const SkillsPage = () => {
     // Navigate to dashboard which will fetch recommendations
     navigate('/dashboard', { state: { fetchRecommendations: true } });
   };
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
+        <div className="max-w-sm mx-auto px-4 text-center">
+          <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center mx-auto mb-6">
+            <Target className="w-6 h-6 text-zinc-500" />
+          </div>
+          <h1 className="text-xl font-semibold text-zinc-100 mb-2">
+            Sign in to manage your skills
+          </h1>
+          <p className="text-sm text-zinc-500 mb-6">
+            Sign in with GitHub to upload your resume and get personalized project recommendations based on your skills.
+          </p>
+          <Button as="a" href="/api/auth/github" size="md">
+            Sign in with GitHub
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

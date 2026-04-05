@@ -6,6 +6,7 @@ import Card from '../components/ui/Card';
 import Container from '../components/ui/Container';
 import { CardSkeleton } from '../components/ui/Loading';
 import { formatNumber, formatRelativeTime, getLanguageColor } from '../lib/utils';
+import api from '../api/axios';
 
 const SearchPage = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,6 +19,8 @@ const SearchPage = ({ user }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [repositories, setRepositories] = useState([]);
+  const [searchError, setSearchError] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const languages = ['JavaScript', 'TypeScript', 'Python', 'Java', 'Go', 'Rust', 'C++', 'Ruby', 'PHP', 'Swift'];
   const sortOptions = [
@@ -29,39 +32,27 @@ const SearchPage = ({ user }) => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    if (!searchQuery.trim()) return;
     setLoading(true);
+    setSearchError(null);
+    setHasSearched(true);
 
-    setTimeout(() => {
-      setRepositories([
-        {
-          id: 1,
-          name: 'react',
-          fullName: 'facebook/react',
-          owner: { login: 'facebook', avatarUrl: 'https://github.com/facebook.png' },
-          description: 'The library for web and native user interfaces.',
-          stars: 220000,
-          forks: 45000,
-          language: 'JavaScript',
-          topics: ['react', 'javascript', 'ui', 'frontend'],
-          updatedAt: '2026-01-25T10:00:00Z',
-          matchScore: 95,
-        },
-        {
-          id: 2,
-          name: 'next.js',
-          fullName: 'vercel/next.js',
-          owner: { login: 'vercel', avatarUrl: 'https://github.com/vercel.png' },
-          description: 'The React Framework for the Web',
-          stars: 118000,
-          forks: 25000,
-          language: 'JavaScript',
-          topics: ['nextjs', 'react', 'framework', 'ssr'],
-          updatedAt: '2026-01-24T15:30:00Z',
-          matchScore: 88,
-        },
-      ]);
+    try {
+      const response = await api.post('/repositories/search', {
+        query: searchQuery,
+        language: filters.language || undefined,
+        minStars: filters.minStars ? Number(filters.minStars) : undefined,
+        topic: filters.topic || undefined,
+        sortBy: filters.sortBy,
+      });
+      setRepositories(response.data.repositories);
+    } catch (err) {
+      console.error('Search failed:', err);
+      setSearchError('Failed to search repositories. Please try again.');
+      setRepositories([]);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const clearFilters = () => {
@@ -152,6 +143,13 @@ const SearchPage = ({ user }) => {
           </div>
         )}
 
+        {/* Error */}
+        {searchError && (
+          <div className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+            {searchError}
+          </div>
+        )}
+
         {/* Results */}
         <div className="flex flex-col gap-4">
           {loading ? (
@@ -178,9 +176,11 @@ const SearchPage = ({ user }) => {
                         </Link>
                         <p className="text-xs text-zinc-500 mt-0.5">{repo.description}</p>
                       </div>
-                      <span className="shrink-0 text-xs text-indigo-400 px-2 py-1 bg-indigo-500/10 rounded border border-indigo-500/20">
-                        {repo.matchScore}% match
-                      </span>
+                      {repo.matchScore != null && (
+                        <span className="shrink-0 text-xs text-indigo-400 px-2 py-1 bg-indigo-500/10 rounded border border-indigo-500/20">
+                          {repo.matchScore}% match
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 mb-2.5">
@@ -217,8 +217,17 @@ const SearchPage = ({ user }) => {
               <div className="w-16 h-16 rounded-2xl bg-zinc-800/80 flex items-center justify-center mb-4">
                 <Code className="w-7 h-7 text-zinc-500" />
               </div>
-              <h3 className="text-base font-semibold text-zinc-200 mb-1">Start your search</h3>
-              <p className="text-sm text-zinc-500">Enter a query to find repositories</p>
+              {hasSearched ? (
+                <>
+                  <h3 className="text-base font-semibold text-zinc-200 mb-1">No repositories found</h3>
+                  <p className="text-sm text-zinc-500">Try adjusting your search or filters</p>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-base font-semibold text-zinc-200 mb-1">Start your search</h3>
+                  <p className="text-sm text-zinc-500">Enter a query to find repositories</p>
+                </>
+              )}
             </div>
           )}
         </div>

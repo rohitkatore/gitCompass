@@ -98,6 +98,30 @@ router.post('/', isAuthenticated, async (req, res) => {
   }
 });
 
+// @route   DELETE /api/skills/all
+// @desc    Clear all skills
+// @access  Private
+router.delete('/all', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    user.skills = [];
+    user.resume = null;
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'All skills cleared',
+      data: { skills: [] },
+    });
+  } catch (error) {
+    console.error('Clear skills error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to clear skills',
+    });
+  }
+});
+
 // @route   DELETE /api/skills/:skillName
 // @desc    Delete a skill
 // @access  Private
@@ -225,30 +249,6 @@ router.post('/extract-resume', isAuthenticated, upload.single('resume'), async (
     res.status(500).json({
       success: false,
       message: 'Failed to process resume: ' + error.message,
-    });
-  }
-});
-
-// @route   DELETE /api/skills/all
-// @desc    Clear all skills
-// @access  Private
-router.delete('/all', isAuthenticated, async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    user.skills = [];
-    user.resume = null;
-    await user.save();
-    
-    res.json({
-      success: true,
-      message: 'All skills cleared',
-      data: { skills: [] },
-    });
-  } catch (error) {
-    console.error('Clear skills error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to clear skills',
     });
   }
 });

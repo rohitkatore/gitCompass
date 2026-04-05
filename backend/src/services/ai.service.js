@@ -15,7 +15,9 @@ export async function explainCode({ code, language, context }) {
     );
     return response.data;
   } catch (err) {
-    console.error('AI explain service error:', err.message);
+    // Log full detail so Render logs show the real cause
+    const detail = err.response?.data ?? err.code ?? err.message;
+    console.error(`AI explain failed [${AI_SERVICE_URL}]:`, detail);
     throw new Error('AI_SERVICE_UNAVAILABLE');
   }
 }

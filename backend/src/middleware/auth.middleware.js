@@ -33,9 +33,22 @@ export const isAuthenticated = async (req, res, next) => {
   });
 };
 
-export const optionalAuth = (req, res, next) => {
+export const optionalAuth = async (req, res, next) => {
+  // Try JWT Bearer token — if valid, populate req.user (same as isAuthenticated)
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.slice(7);
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const user = await User.findById(decoded.id);
+      if (user) {
+        req.user = user;
+      }
+    } catch {
+      // Invalid token — continue unauthenticated
+    }
+  }
   // Continue regardless of authentication status
-  // User info will be available if authenticated
   next();
 };
 

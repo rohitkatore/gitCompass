@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
@@ -34,10 +34,28 @@ const Button = forwardRef(({
   icon: Icon,
   iconPosition = 'left',
   onClick,
+  as: Tag = 'button',
   ...props
 }, ref) => {
+  // Cache the motion-enhanced component so motion() is not called on every render.
+  // Tag virtually never changes for a given Button instance, so this is safe.
+  const motionRef = useRef(null);
+  const tagRef = useRef(undefined);
+  if (tagRef.current !== Tag) {
+    tagRef.current = Tag;
+    if (!Tag || Tag === 'button') {
+      motionRef.current = motion.button;
+    } else if (typeof Tag === 'string') {
+      motionRef.current = motion[Tag] || motion.button;
+    } else {
+      motionRef.current = motion(Tag);
+    }
+  }
+  const MotionComponent = motionRef.current;
+  const isNativeButton = !Tag || Tag === 'button';
+
   return (
-    <motion.button
+    <MotionComponent
       ref={ref}
       whileTap={{ scale: disabled || loading ? 1 : 0.97 }}
       transition={{ duration: 0.1 }}
@@ -47,7 +65,7 @@ const Button = forwardRef(({
         sizes[size],
         className
       )}
-      disabled={disabled || loading}
+      {...(isNativeButton ? { disabled: disabled || loading } : {})}
       onClick={onClick}
       {...props}
     >
@@ -71,7 +89,7 @@ const Button = forwardRef(({
           {Icon && iconPosition === 'right' && <Icon className={iconSizes[size]} />}
         </>
       )}
-    </motion.button>
+    </MotionComponent>
   );
 });
 

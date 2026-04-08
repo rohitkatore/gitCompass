@@ -66,12 +66,12 @@ const DashboardPage = ({ user }) => {
     fetchSkills();
   }, [user]);
 
-  // Fetch recommendations when coming from Skills page or on button click
+  // Fetch recommendations when coming from Skills page
   useEffect(() => {
     if (location.state?.fetchRecommendations && skills.length > 0) {
+      // Clear state BEFORE calling loadRecommendations to prevent re-trigger
+      navigate(location.pathname, { replace: true, state: {} });
       loadRecommendations();
-      // Clear the state
-      navigate(location.pathname, { replace: true });
     }
   }, [location.state, skills]);
 

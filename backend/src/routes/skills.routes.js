@@ -2,8 +2,86 @@ import express from 'express';
 import multer from 'multer';
 import axios from 'axios';
 import FormData from 'form-data';
+import { createRequire } from 'module';
 import { isAuthenticated } from '../middleware/auth.middleware.js';
 import User from '../models/User.model.js';
+
+// pdf-parse is CJS — use createRequire to load it in ESM context
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
+
+// ── Local skill extraction (used when AI engine is unreachable) ────────────────
+// Mirrors the regex logic in ai-engine/services/resume_processor.py
+const TECH_SKILLS = {
+  // Languages
+  python: 'Language', javascript: 'Language', typescript: 'Language',
+  java: 'Language', 'c++': 'Language', 'c#': 'Language', golang: 'Language',
+  go: 'Language', rust: 'Language', ruby: 'Language', php: 'Language',
+  swift: 'Language', kotlin: 'Language', scala: 'Language', dart: 'Language',
+  // Frontend
+  react: 'Frontend', 'react.js': 'Frontend', reactjs: 'Frontend',
+  vue: 'Frontend', 'vue.js': 'Frontend', angular: 'Frontend',
+  svelte: 'Frontend', 'next.js': 'Frontend', nextjs: 'Frontend',
+  html: 'Frontend', html5: 'Frontend', css: 'Frontend', css3: 'Frontend',
+  sass: 'Frontend', tailwind: 'Frontend', tailwindcss: 'Frontend',
+  bootstrap: 'Frontend', redux: 'Frontend', vite: 'Frontend', webpack: 'Frontend',
+  // Backend
+  'node.js': 'Backend', nodejs: 'Backend', express: 'Backend', fastapi: 'Backend',
+  django: 'Backend', flask: 'Backend', spring: 'Backend', 'spring boot': 'Backend',
+  rails: 'Backend', laravel: 'Backend', 'nest.js': 'Backend', nestjs: 'Backend',
+  graphql: 'Backend', 'rest api': 'Backend', grpc: 'Backend',
+  // Database
+  mongodb: 'Database', postgresql: 'Database', postgres: 'Database',
+  mysql: 'Database', redis: 'Database', sqlite: 'Database', firebase: 'Database',
+  elasticsearch: 'Database', cassandra: 'Database', dynamodb: 'Database',
+  // DevOps / Cloud
+  docker: 'DevOps', kubernetes: 'DevOps', k8s: 'DevOps', aws: 'Cloud',
+  gcp: 'Cloud', azure: 'Cloud', terraform: 'DevOps', ansible: 'DevOps',
+  jenkins: 'DevOps', 'github actions': 'DevOps', 'ci/cd': 'DevOps',
+  linux: 'DevOps', nginx: 'DevOps', git: 'DevOps',
+  // AI / ML
+  'machine learning': 'AI/ML', 'deep learning': 'AI/ML', tensorflow: 'AI/ML',
+  pytorch: 'AI/ML', keras: 'AI/ML', pandas: 'AI/ML', numpy: 'AI/ML',
+  'scikit-learn': 'AI/ML', sklearn: 'AI/ML', opencv: 'AI/ML',
+  // Mobile
+  android: 'Mobile', ios: 'Mobile', 'react native': 'Mobile', flutter: 'Mobile',
+  // Testing
+  jest: 'Testing', mocha: 'Testing', cypress: 'Testing', selenium: 'Testing',
+  pytest: 'Testing',
+};
+
+async function localExtractSkills(fileBuffer, mimetype) {
+  let rawText = '';
+  try {
+    if (mimetype === 'application/pdf') {
+      const data = await pdfParse(fileBuffer);
+      rawText = data.text;
+    } else {
+      // DOCX is a ZIP containing XML — toString gets most readable text
+      rawText = fileBuffer.toString('latin1');
+    }
+  } catch {
+    rawText = fileBuffer.toString('latin1');
+  }
+
+  const lower = rawText.toLowerCase();
+  const found = [];
+  const seen = new Set();
+
+  for (const [skill, category] of Object.entries(TECH_SKILLS)) {
+    // Whole-word match so "go" doesn't fire inside "google"
+    const pattern = new RegExp(`(?<![a-z0-9.])${skill.replace(/[.+]/g, '\\$&')}(?![a-z0-9])`, 'i');
+    if (pattern.test(lower) && !seen.has(skill)) {
+      seen.add(skill);
+      // Normalise display name: title-case single words, preserve multi-word
+      const name = skill.includes(' ')
+        ? skill.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+        : skill.charAt(0).toUpperCase() + skill.slice(1);
+      found.push({ name, confidence: 80, category });
+    }
+  }
+  return found;
+}
 
 const router = express.Router();
 
@@ -231,11 +309,29 @@ router.post('/extract-resume', isAuthenticated, upload.single('resume'), async (
   } catch (error) {
     console.error('Extract resume error:', error);
     
+    // AI engine not running locally — fall back to Node.js regex extractor
     if (error.code === 'ECONNREFUSED') {
-      return res.status(503).json({
-        success: false,
-        message: 'AI service is not available. Please ensure the Python AI service is running on port 8000.',
-      });
+      console.log('AI engine unreachable — using local skill extractor as fallback');
+      try {
+        const extractedSkills = await localExtractSkills(req.file.buffer, req.file.mimetype);
+        const user = await User.findById(req.user._id);
+        const existingSkillNames = new Set(user.skills.map(s => s.name.toLowerCase()));
+        const newSkills = extractedSkills.filter(s => !existingSkillNames.has(s.name.toLowerCase()));
+        user.skills.push(...newSkills);
+        user.resume = { filename: req.file.originalname, uploadedAt: new Date() };
+        await user.save();
+        return res.json({
+          success: true,
+          message: `Extracted ${newSkills.length} skill(s) from resume (local parser)`,
+          data: { skills: user.skills, extractedCount: newSkills.length, totalCount: user.skills.length },
+        });
+      } catch (fallbackErr) {
+        console.error('Local extractor also failed:', fallbackErr);
+        return res.status(503).json({
+          success: false,
+          message: 'AI service is not available and local parser failed. Please try again.',
+        });
+      }
     }
 
     // Axios timeout (ECONNABORTED) — AI engine is cold-starting, ask user to retry
